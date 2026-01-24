@@ -4,7 +4,8 @@ import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/auth/logo";
-import { LogOut, User } from "lucide-react";
+import { LogOut, User, Wallet, ChevronRight } from "lucide-react";
+import Link from "next/link";
 
 export default function DashboardPage() {
   const { data: session, status } = useSession();
@@ -66,6 +67,28 @@ export default function DashboardPage() {
               로그인에 성공했습니다. 이 페이지는 인증된 사용자만 볼 수 있습니다.
             </p>
           </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-6 mb-8">
+          <h2 className="text-lg font-semibold mb-4">빠른 메뉴</h2>
+          <Link
+            href="/dashboard/budget"
+            className="flex items-center justify-between p-4 rounded-lg hover:bg-white/5 transition-colors group"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-[var(--success)]/20 flex items-center justify-center">
+                <Wallet className="w-5 h-5 text-[var(--success)]" />
+              </div>
+              <div>
+                <p className="font-medium">가계부</p>
+                <p className="text-sm text-[var(--text-secondary)]">
+                  수입/지출 관리
+                </p>
+              </div>
+            </div>
+            <ChevronRight className="w-5 h-5 text-[var(--text-muted)] group-hover:text-white transition-colors" />
+          </Link>
         </div>
 
         {/* Session Info */}
