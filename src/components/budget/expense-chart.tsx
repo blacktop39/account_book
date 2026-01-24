@@ -11,7 +11,7 @@ interface ExpenseChartProps {
 }
 
 export function ExpenseChart({ transactions }: ExpenseChartProps) {
-  const data = useMemo(() => {
+  const { data, total } = useMemo(() => {
     const expenses = transactions.filter((t) => t.type === "expense");
     const byCategory: Record<string, number> = {};
 
@@ -19,7 +19,7 @@ export function ExpenseChart({ transactions }: ExpenseChartProps) {
       byCategory[t.categoryId] = (byCategory[t.categoryId] || 0) + t.amount;
     }
 
-    return Object.entries(byCategory)
+    const items = Object.entries(byCategory)
       .map(([categoryId, amount]) => {
         const category = getCategoryById(categoryId);
         return {
@@ -29,9 +29,17 @@ export function ExpenseChart({ transactions }: ExpenseChartProps) {
         };
       })
       .sort((a, b) => b.value - a.value);
-  }, [transactions]);
 
-  const total = data.reduce((sum, item) => sum + item.value, 0);
+    const sum = items.reduce((acc, item) => acc + item.value, 0);
+
+    return {
+      data: items.map((item) => ({
+        ...item,
+        percent: ((item.value / sum) * 100).toFixed(1),
+      })),
+      total: sum,
+    };
+  }, [transactions]);
 
   if (data.length === 0) {
     return (
@@ -66,19 +74,16 @@ export function ExpenseChart({ transactions }: ExpenseChartProps) {
             </Pie>
             <Tooltip
               content={({ active, payload }) => {
-                if (active && payload && payload.length) {
-                  const item = payload[0].payload;
-                  const percent = ((item.value / total) * 100).toFixed(1);
-                  return (
-                    <div className="bg-[var(--surface)] border border-[var(--border)] rounded-lg px-3 py-2 shadow-lg">
-                      <p className="text-sm font-medium">{item.name}</p>
-                      <p className="text-sm text-[var(--text-secondary)]">
-                        ₩{formatAmount(item.value)} ({percent}%)
-                      </p>
-                    </div>
-                  );
-                }
-                return null;
+                if (!active || !payload?.length) return null;
+                const item = payload[0].payload;
+                return (
+                  <div className="bg-[var(--surface)] border border-[var(--border)] rounded-lg px-3 py-2 shadow-lg">
+                    <p className="text-sm font-medium">{item.name}</p>
+                    <p className="text-sm text-[var(--text-secondary)]">
+                      ₩{formatAmount(item.value)} ({item.percent}%)
+                    </p>
+                  </div>
+                );
               }}
             />
           </PieChart>
@@ -87,23 +92,20 @@ export function ExpenseChart({ transactions }: ExpenseChartProps) {
 
       {/* Legend */}
       <div className="mt-4 space-y-2">
-        {data.map((item) => {
-          const percent = ((item.value / total) * 100).toFixed(1);
-          return (
-            <div key={item.name} className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div
-                  className="w-3 h-3 rounded-full"
-                  style={{ backgroundColor: item.color }}
-                />
-                <span className="text-sm">{item.name}</span>
-              </div>
-              <span className="text-sm text-[var(--text-secondary)]">
-                {percent}%
-              </span>
+        {data.map((item) => (
+          <div key={item.name} className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div
+                className="w-3 h-3 rounded-full"
+                style={{ backgroundColor: item.color }}
+              />
+              <span className="text-sm">{item.name}</span>
             </div>
-          );
-        })}
+            <span className="text-sm text-[var(--text-secondary)]">
+              {item.percent}%
+            </span>
+          </div>
+        ))}
       </div>
     </div>
   );

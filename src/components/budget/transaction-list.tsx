@@ -33,17 +33,13 @@ export function TransactionList({
           <h3 className="text-sm font-medium text-[var(--text-secondary)] mb-2 px-4">
             {formatDate(date)}
           </h3>
-          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl overflow-hidden">
-            {groupedTransactions[date].map((transaction, index) => (
-              <div key={transaction.id}>
-                {index > 0 && (
-                  <div className="border-t border-[var(--border)]" />
-                )}
-                <TransactionItem
-                  transaction={transaction}
-                  onDelete={onDelete}
-                />
-              </div>
+          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl overflow-hidden divide-y divide-[var(--border)]">
+            {groupedTransactions[date].map((transaction) => (
+              <TransactionItem
+                key={transaction.id}
+                transaction={transaction}
+                onDelete={onDelete}
+              />
             ))}
           </div>
         </div>
