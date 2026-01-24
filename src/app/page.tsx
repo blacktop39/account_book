@@ -1,65 +1,148 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { signIn } from "next-auth/react";
+import { AuthCard } from "@/components/auth/auth-card";
+import { Logo } from "@/components/auth/logo";
+import { SocialButton } from "@/components/auth/social-button";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Divider } from "@/components/ui/divider";
+
+export default function LoginPage() {
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<{ email?: string; password?: string; general?: string }>({});
+
+  const validateForm = () => {
+    const newErrors: { email?: string; password?: string } = {};
+
+    if (!email) {
+      newErrors.email = "이메일을 입력해주세요";
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      newErrors.email = "유효한 이메일 주소를 입력해주세요";
+    }
+
+    if (!password) {
+      newErrors.password = "비밀번호를 입력해주세요";
+    } else if (password.length < 6) {
+      newErrors.password = "비밀번호는 6자 이상이어야 합니다";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!validateForm()) return;
+
+    setIsLoading(true);
+    setErrors({});
+
+    const result = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    });
+
+    setIsLoading(false);
+
+    if (result?.error) {
+      setErrors({ general: "이메일 또는 비밀번호가 올바르지 않습니다" });
+    } else if (result?.ok) {
+      router.push("/dashboard");
+      router.refresh();
+    }
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="min-h-screen flex items-center justify-center p-4">
+      <AuthCard>
+        <Logo className="mb-8" />
+
+        <h1 className="text-2xl font-semibold text-center mb-2">
+          로그인
+        </h1>
+        <p className="text-sm text-[var(--text-secondary)] text-center mb-8">
+          계정에 로그인하여 계속하세요
+        </p>
+
+        <div className="space-y-3 mb-6">
+          <SocialButton provider="github" />
+          <SocialButton provider="google" />
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+
+        <Divider text="또는" className="mb-6" />
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {errors.general && (
+            <div className="p-3 rounded-lg bg-[var(--error)]/10 border border-[var(--error)]/20">
+              <p className="text-sm text-[var(--error)]">{errors.general}</p>
+            </div>
+          )}
+
+          <Input
+            type="email"
+            label="이메일"
+            placeholder="you@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            error={errors.email}
+            autoComplete="email"
+          />
+
+          <Input
+            type="password"
+            label="비밀번호"
+            placeholder="••••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            error={errors.password}
+            autoComplete="current-password"
+          />
+
+          <div className="flex items-center justify-between">
+            <Checkbox
+              id="remember"
+              label="로그인 상태 유지"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            <Link
+              href="/forgot-password"
+              className="text-sm text-[var(--text-secondary)] hover:text-white transition-colors"
+            >
+              비밀번호 찾기
+            </Link>
+          </div>
+
+          <Button
+            type="submit"
+            className="w-full"
+            isLoading={isLoading}
           >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+            로그인
+          </Button>
+        </form>
+
+        <p className="mt-6 text-center text-sm text-[var(--text-secondary)]">
+          계정이 없으신가요?{" "}
+          <Link
+            href="/signup"
+            className="text-white hover:underline"
+          >
+            가입하기
+          </Link>
+        </p>
+      </AuthCard>
+    </main>
   );
 }
