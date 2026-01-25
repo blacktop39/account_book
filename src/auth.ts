@@ -1,17 +1,13 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import GitHub from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
 import { verifyUser } from "@/lib/users";
+import { authConfig } from "./auth.config";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  providers: [
-    // GitHub OAuth
-    GitHub({
-      clientId: process.env.AUTH_GITHUB_ID,
-      clientSecret: process.env.AUTH_GITHUB_SECRET,
-    }),
+  ...authConfig,
 
+  providers: [
     // Google OAuth
     Google({
       clientId: process.env.AUTH_GOOGLE_ID,
@@ -46,26 +42,4 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
     }),
   ],
-
-  pages: {
-    signIn: "/",
-  },
-
-  callbacks: {
-    // JWT에 사용자 ID 추가
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
-      }
-      return token;
-    },
-
-    // 세션에 사용자 ID 추가
-    async session({ session, token }) {
-      if (session.user && token.id) {
-        session.user.id = token.id as string;
-      }
-      return session;
-    },
-  },
 });

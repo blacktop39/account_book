@@ -11,7 +11,7 @@ interface ExpenseChartProps {
 }
 
 export function ExpenseChart({ transactions }: ExpenseChartProps) {
-  const { data, total } = useMemo(() => {
+  const { data } = useMemo(() => {
     const expenses = transactions.filter((t) => t.type === "expense");
     const byCategory: Record<string, number> = {};
 

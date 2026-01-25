@@ -17,7 +17,7 @@ export async function POST(request: Request) {
 
     // 보안: 사용자 존재 여부와 관계없이 동일한 응답
     if (user) {
-      const token = createResetToken(email);
+      const token = await createResetToken(email);
       const resetUrl = `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/reset-password?token=${token}`;
 
       // 데모 모드: 콘솔에 리셋 링크 출력

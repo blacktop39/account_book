@@ -76,7 +76,6 @@ export default function LoginPage() {
         </p>
 
         <div className="space-y-3 mb-6">
-          <SocialButton provider="github" />
           <SocialButton provider="google" />
         </div>
 
