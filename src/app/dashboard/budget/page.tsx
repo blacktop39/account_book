@@ -21,7 +21,7 @@ import { TransactionForm } from "@/components/budget/transaction-form";
 import { CalendarView } from "@/components/budget/calendar-view";
 import { useTransactions } from "@/lib/hooks/use-transactions";
 import { formatMonth, formatDate } from "@/lib/budget/utils";
-import { TransactionType } from "@/lib/budget/types";
+import { Transaction, TransactionType } from "@/lib/budget/types";
 
 type ViewMode = "list" | "calendar";
 
@@ -34,6 +34,7 @@ export default function BudgetPage() {
     goToPrevMonth,
     goToNextMonth,
     addTransaction,
+    updateTransaction,
     deleteTransaction,
     isLoading,
   } = useTransactions();
@@ -41,6 +42,8 @@ export default function BudgetPage() {
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [modalType, setModalType] = useState<TransactionType | null>(null);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [editingTransaction, setEditingTransaction] =
+    useState<Transaction | null>(null);
 
   const handleAddTransaction = (data: {
     type: TransactionType;
@@ -51,6 +54,23 @@ export default function BudgetPage() {
   }) => {
     addTransaction(data);
     setModalType(null);
+  };
+
+  const handleEditTransaction = (data: {
+    type: TransactionType;
+    amount: number;
+    categoryId: string;
+    description: string;
+    date: string;
+  }) => {
+    if (editingTransaction) {
+      updateTransaction(editingTransaction.id, data);
+      setEditingTransaction(null);
+    }
+  };
+
+  const handleEdit = (transaction: Transaction) => {
+    setEditingTransaction(transaction);
   };
 
   // 선택된 날짜의 거래 필터링
@@ -155,6 +175,7 @@ export default function BudgetPage() {
         {viewMode === "list" ? (
           <TransactionList
             groupedTransactions={groupedTransactions}
+            onEdit={handleEdit}
             onDelete={deleteTransaction}
           />
         ) : (
@@ -176,6 +197,7 @@ export default function BudgetPage() {
                 {selectedDateTransactions.length > 0 ? (
                   <TransactionList
                     groupedTransactions={selectedDateGrouped}
+                    onEdit={handleEdit}
                     onDelete={deleteTransaction}
                   />
                 ) : (
@@ -201,6 +223,28 @@ export default function BudgetPage() {
               type={modalType}
               onSubmit={handleAddTransaction}
               onCancel={() => setModalType(null)}
+            />
+          )}
+        </Modal>
+
+        {/* Edit Transaction Modal */}
+        <Modal
+          isOpen={editingTransaction !== null}
+          onClose={() => setEditingTransaction(null)}
+          title="거래 수정"
+        >
+          {editingTransaction && (
+            <TransactionForm
+              type={editingTransaction.type}
+              onSubmit={handleEditTransaction}
+              onCancel={() => setEditingTransaction(null)}
+              initialData={{
+                amount: editingTransaction.amount,
+                categoryId: editingTransaction.categoryId,
+                description: editingTransaction.description,
+                date: editingTransaction.date,
+              }}
+              mode="edit"
             />
           )}
         </Modal>
