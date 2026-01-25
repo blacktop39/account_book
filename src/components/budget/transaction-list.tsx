@@ -6,11 +6,13 @@ import { TransactionItem } from "./transaction-item";
 
 interface TransactionListProps {
   groupedTransactions: Record<string, Transaction[]>;
+  onEdit?: (transaction: Transaction) => void;
   onDelete?: (id: string) => void;
 }
 
 export function TransactionList({
   groupedTransactions,
+  onEdit,
   onDelete,
 }: TransactionListProps) {
   const dates = Object.keys(groupedTransactions);
@@ -38,6 +40,7 @@ export function TransactionList({
               <TransactionItem
                 key={transaction.id}
                 transaction={transaction}
+                onEdit={onEdit}
                 onDelete={onDelete}
               />
             ))}

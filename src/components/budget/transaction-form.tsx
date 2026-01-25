@@ -41,17 +41,30 @@ interface TransactionFormProps {
     date: string;
   }) => void;
   onCancel: () => void;
+  initialData?: {
+    amount: number;
+    categoryId: string;
+    description: string;
+    date: string;
+  };
+  mode?: "add" | "edit";
 }
 
 export function TransactionForm({
   type,
   onSubmit,
   onCancel,
+  initialData,
+  mode = "add",
 }: TransactionFormProps) {
-  const [amount, setAmount] = useState("");
-  const [categoryId, setCategoryId] = useState("");
-  const [description, setDescription] = useState("");
-  const [date, setDate] = useState(getToday());
+  const [amount, setAmount] = useState(
+    initialData?.amount ? String(initialData.amount) : ""
+  );
+  const [categoryId, setCategoryId] = useState(initialData?.categoryId || "");
+  const [description, setDescription] = useState(
+    initialData?.description || ""
+  );
+  const [date, setDate] = useState(initialData?.date || getToday());
   const [errors, setErrors] = useState<{
     amount?: string;
     categoryId?: string;
@@ -143,7 +156,11 @@ export function TransactionForm({
           취소
         </Button>
         <Button type="submit" className="flex-1">
-          {type === "income" ? "수입 추가" : "지출 추가"}
+          {mode === "edit"
+            ? "수정"
+            : type === "income"
+              ? "수입 추가"
+              : "지출 추가"}
         </Button>
       </div>
     </form>

@@ -66,6 +66,41 @@ export function useTransactions() {
     []
   );
 
+  // 거래 수정
+  const updateTransaction = useCallback(
+    async (
+      id: string,
+      data: Partial<{
+        type: TransactionType;
+        amount: number;
+        categoryId: string;
+        description: string;
+        date: string;
+      }>
+    ) => {
+      try {
+        const res = await fetch(`/api/budget/transactions/${id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+
+        if (res.ok) {
+          const { transaction } = await res.json();
+          // 낙관적 업데이트
+          setTransactions((prev) =>
+            prev.map((t) => (t.id === id ? transaction : t))
+          );
+          return transaction;
+        }
+      } catch (error) {
+        console.error("거래 수정 실패:", error);
+      }
+      return null;
+    },
+    []
+  );
+
   // 거래 삭제
   const deleteTransaction = useCallback(async (id: string) => {
     try {
@@ -110,6 +145,7 @@ export function useTransactions() {
     goToPrevMonth,
     goToNextMonth,
     addTransaction,
+    updateTransaction,
     deleteTransaction,
     isLoading,
   };
