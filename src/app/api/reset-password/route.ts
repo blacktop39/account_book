@@ -28,7 +28,7 @@ export async function POST(request: Request) {
     }
 
     // 토큰 검증
-    const email = verifyResetToken(token);
+    const email = await verifyResetToken(token);
     if (!email) {
       return NextResponse.json(
         { error: "링크가 만료되었거나 유효하지 않습니다" },

@@ -3,57 +3,83 @@
 import { useState, useEffect, useCallback } from "react";
 import { Transaction, TransactionType } from "@/lib/budget/types";
 import {
-  getBudgetData,
-  addTransaction as addTx,
-  deleteTransaction as deleteTx,
-} from "@/lib/budget/storage";
-import {
-  generateId,
   getCurrentMonth,
   filterTransactionsByMonth,
   groupTransactionsByDate,
   calculateMonthSummary,
+  getAdjacentMonth,
 } from "@/lib/budget/utils";
 
 export function useTransactions() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [currentMonth, setCurrentMonth] = useState(getCurrentMonth());
-  const [mounted, setMounted] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // 클라이언트에서만 LocalStorage 읽기 (초기 마운트 시 1회)
-  useEffect(() => {
-    const data = getBudgetData();
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setTransactions(data.transactions);
-    setMounted(true);
+  // API에서 거래 데이터 가져오기
+  const fetchTransactions = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const res = await fetch(`/api/budget/transactions`);
+      if (res.ok) {
+        const data = await res.json();
+        setTransactions(data.transactions || []);
+      }
+    } catch (error) {
+      console.error("거래 조회 실패:", error);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
+
+  // 초기 데이터 로드
+  useEffect(() => {
+    fetchTransactions();
+  }, [fetchTransactions]);
 
   // 거래 추가
   const addTransaction = useCallback(
-    (data: {
+    async (data: {
       type: TransactionType;
       amount: number;
       categoryId: string;
       description: string;
       date: string;
     }) => {
-      const transaction: Transaction = {
-        id: generateId(),
-        ...data,
-        createdAt: new Date().toISOString(),
-      };
+      try {
+        const res = await fetch("/api/budget/transactions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
 
-      const updated = addTx(transaction);
-      setTransactions(updated.transactions);
-      return transaction;
+        if (res.ok) {
+          const { transaction } = await res.json();
+          // 낙관적 업데이트
+          setTransactions((prev) => [transaction, ...prev]);
+          return transaction;
+        }
+      } catch (error) {
+        console.error("거래 추가 실패:", error);
+      }
+      return null;
     },
     []
   );
 
   // 거래 삭제
-  const deleteTransaction = useCallback((id: string) => {
-    const updated = deleteTx(id);
-    setTransactions(updated.transactions);
+  const deleteTransaction = useCallback(async (id: string) => {
+    try {
+      const res = await fetch(`/api/budget/transactions/${id}`, {
+        method: "DELETE",
+      });
+
+      if (res.ok) {
+        // 낙관적 업데이트
+        setTransactions((prev) => prev.filter((t) => t.id !== id));
+      }
+    } catch (error) {
+      console.error("거래 삭제 실패:", error);
+    }
   }, []);
 
   // 현재 월 거래
@@ -67,19 +93,11 @@ export function useTransactions() {
 
   // 월 변경
   const goToPrevMonth = useCallback(() => {
-    setCurrentMonth((prev) => {
-      const [year, month] = prev.split("-").map(Number);
-      const date = new Date(year, month - 2);
-      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
-    });
+    setCurrentMonth((prev) => getAdjacentMonth(prev, -1));
   }, []);
 
   const goToNextMonth = useCallback(() => {
-    setCurrentMonth((prev) => {
-      const [year, month] = prev.split("-").map(Number);
-      const date = new Date(year, month);
-      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
-    });
+    setCurrentMonth((prev) => getAdjacentMonth(prev, 1));
   }, []);
 
   return {
@@ -93,6 +111,6 @@ export function useTransactions() {
     goToNextMonth,
     addTransaction,
     deleteTransaction,
-    isLoading: !mounted,
+    isLoading,
   };
 }

@@ -1,20 +1,21 @@
 import { hash, compare } from "bcryptjs";
+import { prisma } from "./prisma";
+
+// Edge Runtime 호환 토큰 생성
+function generateSecureToken(): string {
+  const array = new Uint8Array(32);
+  crypto.getRandomValues(array);
+  return Array.from(array, (byte) => byte.toString(16).padStart(2, "0")).join(
+    ""
+  );
+}
 
 export interface User {
   id: string;
   email: string;
   name: string;
   password: string;
-  image?: string;
-}
-
-// 메모리 기반 사용자 저장소 (데모용)
-// 서버 재시작 시 초기화됨
-const users: User[] = [];
-
-// ID 생성
-function generateId(): string {
-  return Math.random().toString(36).substring(2) + Date.now().toString(36);
+  image?: string | null;
 }
 
 // 사용자 생성
@@ -29,20 +30,25 @@ export async function createUser(
   }
 
   const hashedPassword = await hash(password, 10);
-  const user: User = {
-    id: generateId(),
-    email,
-    name,
-    password: hashedPassword,
-  };
 
-  users.push(user);
+  const user = await prisma.user.create({
+    data: {
+      email,
+      name,
+      password: hashedPassword,
+    },
+  });
+
   return user;
 }
 
 // 이메일로 사용자 찾기
 export async function findUserByEmail(email: string): Promise<User | null> {
-  return users.find((u) => u.email === email) || null;
+  const user = await prisma.user.findUnique({
+    where: { email },
+  });
+
+  return user;
 }
 
 // 사용자 인증
@@ -70,45 +76,53 @@ export function sanitizeUser(user: User): Omit<User, "password"> {
   return sanitized;
 }
 
-// 비밀번호 재설정 토큰 저장소
-interface ResetToken {
-  email: string;
-  token: string;
-  expiresAt: Date;
-}
-
-const resetTokens: ResetToken[] = [];
-
 // 비밀번호 재설정 토큰 생성
-export function createResetToken(email: string): string {
-  // 기존 토큰 삭제
-  const existingIndex = resetTokens.findIndex((t) => t.email === email);
-  if (existingIndex !== -1) {
-    resetTokens.splice(existingIndex, 1);
+export async function createResetToken(email: string): Promise<string | null> {
+  const user = await findUserByEmail(email);
+  if (!user) {
+    return null;
   }
 
-  const token = generateId() + generateId();
+  // 기존 토큰 삭제
+  await prisma.resetToken.deleteMany({
+    where: { userId: user.id },
+  });
+
+  // 암호학적으로 안전한 토큰 생성 (Edge Runtime 호환)
+  const token = generateSecureToken();
   const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1시간
 
-  resetTokens.push({ email, token, expiresAt });
+  await prisma.resetToken.create({
+    data: {
+      token,
+      expiresAt,
+      userId: user.id,
+    },
+  });
+
   return token;
 }
 
 // 토큰 검증
-export function verifyResetToken(token: string): string | null {
-  const resetToken = resetTokens.find((t) => t.token === token);
+export async function verifyResetToken(token: string): Promise<string | null> {
+  const resetToken = await prisma.resetToken.findUnique({
+    where: { token },
+    include: { user: true },
+  });
+
   if (!resetToken) {
     return null;
   }
 
   if (new Date() > resetToken.expiresAt) {
     // 만료된 토큰 삭제
-    const index = resetTokens.indexOf(resetToken);
-    resetTokens.splice(index, 1);
+    await prisma.resetToken.delete({
+      where: { id: resetToken.id },
+    });
     return null;
   }
 
-  return resetToken.email;
+  return resetToken.user.email;
 }
 
 // 비밀번호 재설정
@@ -116,23 +130,33 @@ export async function resetPassword(
   token: string,
   newPassword: string
 ): Promise<boolean> {
-  const email = verifyResetToken(token);
-  if (!email) {
+  const resetToken = await prisma.resetToken.findUnique({
+    where: { token },
+    include: { user: true },
+  });
+
+  if (!resetToken) {
     return false;
   }
 
-  const user = users.find((u) => u.email === email);
-  if (!user) {
+  if (new Date() > resetToken.expiresAt) {
+    await prisma.resetToken.delete({
+      where: { id: resetToken.id },
+    });
     return false;
   }
 
-  user.password = await hash(newPassword, 10);
+  const hashedPassword = await hash(newPassword, 10);
+
+  await prisma.user.update({
+    where: { id: resetToken.userId },
+    data: { password: hashedPassword },
+  });
 
   // 사용된 토큰 삭제
-  const tokenIndex = resetTokens.findIndex((t) => t.token === token);
-  if (tokenIndex !== -1) {
-    resetTokens.splice(tokenIndex, 1);
-  }
+  await prisma.resetToken.delete({
+    where: { id: resetToken.id },
+  });
 
   return true;
 }
