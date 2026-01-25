@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 
-// GET: 월별 거래 조회
+// GET: 거래 조회 (페이지네이션 지원)
 export async function GET(request: Request) {
   try {
     const session = await auth();
@@ -12,6 +12,8 @@ export async function GET(request: Request) {
 
     const { searchParams } = new URL(request.url);
     const month = searchParams.get("month"); // YYYY-MM 형식
+    const page = parseInt(searchParams.get("page") || "0");
+    const limit = parseInt(searchParams.get("limit") || "0");
 
     const where: { userId: string; date?: { startsWith: string } } = {
       userId: session.user.id,
@@ -21,10 +23,34 @@ export async function GET(request: Request) {
       where.date = { startsWith: month };
     }
 
-    const transactions = await prisma.transaction.findMany({
-      where,
-      orderBy: [{ date: "desc" }, { createdAt: "desc" }],
-    });
+    // 페이지네이션 적용 (page/limit이 0이면 전체 조회)
+    const usePagination = page > 0 && limit > 0;
+
+    const [transactions, total] = await Promise.all([
+      prisma.transaction.findMany({
+        where,
+        orderBy: [{ date: "desc" }, { createdAt: "desc" }],
+        ...(usePagination && {
+          skip: (page - 1) * limit,
+          take: limit,
+        }),
+      }),
+      usePagination ? prisma.transaction.count({ where }) : Promise.resolve(0),
+    ]);
+
+    if (usePagination) {
+      return NextResponse.json({
+        transactions,
+        pagination: {
+          page,
+          limit,
+          total,
+          pages: Math.ceil(total / limit),
+          hasNext: page < Math.ceil(total / limit),
+          hasPrev: page > 1,
+        },
+      });
+    }
 
     return NextResponse.json({ transactions });
   } catch (error) {
