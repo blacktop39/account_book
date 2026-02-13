@@ -16,6 +16,7 @@ model User {
   updatedAt    DateTime      @updatedAt
   transactions Transaction[]
   resetTokens  ResetToken[]
+  categories   Category[]
 }
 
 model Transaction {
@@ -38,4 +39,19 @@ model ResetToken {
   expiresAt DateTime
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  name      String
+  icon      String
+  color     String
+  type      String   // "income" | "expense"
+  isDefault Boolean  @default(false)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, name, type])
+  @@index([userId, type])
 }
