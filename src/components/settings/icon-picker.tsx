@@ -68,7 +68,7 @@ const ICONS = [
   { id: "Scissors", icon: Scissors, label: "미용" },
 ];
 
-export const iconMap: Record<string, React.ComponentType<{ className?: string }>> = Object.fromEntries(
+export const iconMap: Record<string, React.ElementType> = Object.fromEntries(
   ICONS.map((i) => [i.id, i.icon])
 );
 

@@ -36,7 +36,9 @@ export function CategoryItem({ category, onEdit, onDelete }: CategoryItemProps) 
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium">{category.name}</span>
           {category.isDefault && (
-            <Lock className="w-3 h-3 text-[var(--text-muted)]" title="기본 카테고리" />
+            <span title="기본 카테고리">
+              <Lock className="w-3 h-3 text-[var(--text-muted)]" />
+            </span>
           )}
         </div>
       </div>

@@ -7,13 +7,14 @@ import { DEFAULT_CATEGORIES } from "@/lib/budget/categories";
 export async function GET() {
   try {
     const session = await auth();
-    if (!session?.user?.id) {
+    const userId = session?.user?.id;
+    if (!userId) {
       return NextResponse.json({ error: "인증이 필요합니다" }, { status: 401 });
     }
 
     // 사용자 카테고리 조회
     let categories = await prisma.category.findMany({
-      where: { userId: session.user.id },
+      where: { userId },
       orderBy: [{ type: "asc" }, { isDefault: "desc" }, { createdAt: "asc" }],
     });
 
@@ -25,7 +26,7 @@ export async function GET() {
         color: cat.color,
         type: cat.type,
         isDefault: true,
-        userId: session.user.id,
+        userId,
       }));
 
       await prisma.category.createMany({
@@ -33,7 +34,7 @@ export async function GET() {
       });
 
       categories = await prisma.category.findMany({
-        where: { userId: session.user.id },
+        where: { userId },
         orderBy: [{ type: "asc" }, { isDefault: "desc" }, { createdAt: "asc" }],
       });
     }
@@ -52,7 +53,8 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
-    if (!session?.user?.id) {
+    const userId = session?.user?.id;
+    if (!userId) {
       return NextResponse.json({ error: "인증이 필요합니다" }, { status: 401 });
     }
 
@@ -77,7 +79,7 @@ export async function POST(request: NextRequest) {
     // 중복 검사
     const existing = await prisma.category.findFirst({
       where: {
-        userId: session.user.id,
+        userId,
         name,
         type,
       },
@@ -97,7 +99,7 @@ export async function POST(request: NextRequest) {
         color,
         type,
         isDefault: false,
-        userId: session.user.id,
+        userId,
       },
     });
 

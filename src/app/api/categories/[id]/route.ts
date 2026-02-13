@@ -9,7 +9,8 @@ export async function PATCH(
 ) {
   try {
     const session = await auth();
-    if (!session?.user?.id) {
+    const userId = session?.user?.id;
+    if (!userId) {
       return NextResponse.json({ error: "인증이 필요합니다" }, { status: 401 });
     }
 
@@ -21,7 +22,7 @@ export async function PATCH(
     const existing = await prisma.category.findFirst({
       where: {
         id,
-        userId: session.user.id,
+        userId,
       },
     });
 
@@ -36,7 +37,7 @@ export async function PATCH(
     if (name && name !== existing.name) {
       const duplicate = await prisma.category.findFirst({
         where: {
-          userId: session.user.id,
+          userId,
           name,
           type: existing.type,
           NOT: { id },
@@ -77,7 +78,8 @@ export async function DELETE(
 ) {
   try {
     const session = await auth();
-    if (!session?.user?.id) {
+    const userId = session?.user?.id;
+    if (!userId) {
       return NextResponse.json({ error: "인증이 필요합니다" }, { status: 401 });
     }
 
@@ -87,7 +89,7 @@ export async function DELETE(
     const existing = await prisma.category.findFirst({
       where: {
         id,
-        userId: session.user.id,
+        userId,
       },
     });
 
