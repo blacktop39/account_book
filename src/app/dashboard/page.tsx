@@ -4,7 +4,7 @@ import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/auth/logo";
-import { LogOut, User, Wallet, ChevronRight } from "lucide-react";
+import { LogOut, User, Wallet, ChevronRight, Settings } from "lucide-react";
 import Link from "next/link";
 
 export default function DashboardPage() {
@@ -84,6 +84,23 @@ export default function DashboardPage() {
                 <p className="font-medium">가계부</p>
                 <p className="text-sm text-[var(--text-secondary)]">
                   수입/지출 관리
+                </p>
+              </div>
+            </div>
+            <ChevronRight className="w-5 h-5 text-[var(--text-muted)] group-hover:text-white transition-colors" />
+          </Link>
+          <Link
+            href="/dashboard/settings"
+            className="flex items-center justify-between p-4 rounded-lg hover:bg-white/5 transition-colors group"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-[var(--text-muted)]/20 flex items-center justify-center">
+                <Settings className="w-5 h-5 text-[var(--text-muted)]" />
+              </div>
+              <div>
+                <p className="font-medium">설정</p>
+                <p className="text-sm text-[var(--text-secondary)]">
+                  카테고리 관리
                 </p>
               </div>
             </div>

@@ -11,6 +11,27 @@ import {
   Receipt,
   MoreHorizontal,
   HelpCircle,
+  Coffee,
+  Beer,
+  CreditCard,
+  Home,
+  Heart,
+  BookOpen,
+  Music,
+  Film,
+  Plane,
+  Train,
+  Bus,
+  Shirt,
+  Package,
+  PiggyBank,
+  Smartphone,
+  Wifi,
+  Dumbbell,
+  Pill,
+  Baby,
+  Dog,
+  Scissors,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getCategoryById } from "@/lib/budget/categories";
@@ -25,10 +46,39 @@ const iconMap: Record<string, React.ElementType> = {
   Gamepad2,
   Receipt,
   MoreHorizontal,
+  Coffee,
+  Beer,
+  CreditCard,
+  Home,
+  Heart,
+  BookOpen,
+  Music,
+  Film,
+  Plane,
+  Train,
+  Bus,
+  Shirt,
+  Package,
+  PiggyBank,
+  Smartphone,
+  Wifi,
+  Dumbbell,
+  Pill,
+  Baby,
+  Dog,
+  Scissors,
 };
+
+interface CategoryData {
+  id: string;
+  name: string;
+  icon: string;
+  color: string;
+}
 
 interface CategoryBadgeProps {
   categoryId: string;
+  category?: CategoryData;
   showLabel?: boolean;
   size?: "sm" | "md";
   className?: string;
@@ -36,11 +86,13 @@ interface CategoryBadgeProps {
 
 export function CategoryBadge({
   categoryId,
+  category: externalCategory,
   showLabel = true,
   size = "md",
   className,
 }: CategoryBadgeProps) {
-  const category = getCategoryById(categoryId);
+  // 외부 카테고리가 있으면 사용, 없으면 기본 카테고리에서 조회
+  const category = externalCategory || getCategoryById(categoryId);
 
   if (!category) {
     return (

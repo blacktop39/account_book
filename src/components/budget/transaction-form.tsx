@@ -11,6 +11,28 @@ import {
   Gamepad2,
   Receipt,
   MoreHorizontal,
+  Coffee,
+  Beer,
+  CreditCard,
+  Home,
+  Heart,
+  BookOpen,
+  Music,
+  Film,
+  Plane,
+  Train,
+  Bus,
+  Shirt,
+  Package,
+  PiggyBank,
+  Smartphone,
+  Wifi,
+  Dumbbell,
+  Pill,
+  Baby,
+  Dog,
+  Scissors,
+  HelpCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,7 +51,35 @@ const iconMap: Record<string, React.ReactNode> = {
   Gamepad2: <Gamepad2 className="w-4 h-4" />,
   Receipt: <Receipt className="w-4 h-4" />,
   MoreHorizontal: <MoreHorizontal className="w-4 h-4" />,
+  Coffee: <Coffee className="w-4 h-4" />,
+  Beer: <Beer className="w-4 h-4" />,
+  CreditCard: <CreditCard className="w-4 h-4" />,
+  Home: <Home className="w-4 h-4" />,
+  Heart: <Heart className="w-4 h-4" />,
+  BookOpen: <BookOpen className="w-4 h-4" />,
+  Music: <Music className="w-4 h-4" />,
+  Film: <Film className="w-4 h-4" />,
+  Plane: <Plane className="w-4 h-4" />,
+  Train: <Train className="w-4 h-4" />,
+  Bus: <Bus className="w-4 h-4" />,
+  Shirt: <Shirt className="w-4 h-4" />,
+  Package: <Package className="w-4 h-4" />,
+  PiggyBank: <PiggyBank className="w-4 h-4" />,
+  Smartphone: <Smartphone className="w-4 h-4" />,
+  Wifi: <Wifi className="w-4 h-4" />,
+  Dumbbell: <Dumbbell className="w-4 h-4" />,
+  Pill: <Pill className="w-4 h-4" />,
+  Baby: <Baby className="w-4 h-4" />,
+  Dog: <Dog className="w-4 h-4" />,
+  Scissors: <Scissors className="w-4 h-4" />,
 };
+
+interface CategoryOption {
+  id: string;
+  name: string;
+  icon: string;
+  color: string;
+}
 
 interface TransactionFormProps {
   type: TransactionType;
@@ -48,6 +98,7 @@ interface TransactionFormProps {
     date: string;
   };
   mode?: "add" | "edit";
+  categories?: CategoryOption[];
 }
 
 export function TransactionForm({
@@ -56,6 +107,7 @@ export function TransactionForm({
   onCancel,
   initialData,
   mode = "add",
+  categories: externalCategories,
 }: TransactionFormProps) {
   const [amount, setAmount] = useState(
     initialData?.amount ? String(initialData.amount) : ""
@@ -70,11 +122,12 @@ export function TransactionForm({
     categoryId?: string;
   }>({});
 
-  const categories = getCategoriesByType(type);
+  // 외부 카테고리가 있으면 사용, 없으면 기본 카테고리 사용
+  const categories = externalCategories || getCategoriesByType(type);
   const categoryOptions = categories.map((c) => ({
     value: c.id,
     label: c.name,
-    icon: iconMap[c.icon],
+    icon: iconMap[c.icon] || <HelpCircle className="w-4 h-4" />,
     color: c.color,
   }));
 
