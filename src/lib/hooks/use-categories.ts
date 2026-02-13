@@ -31,8 +31,7 @@ export function useCategories() {
         const data = await res.json();
         setError(data.error || "카테고리 조회 실패");
       }
-    } catch (err) {
-      console.error("카테고리 조회 실패:", err);
+    } catch {
       setError("카테고리를 불러올 수 없습니다");
     } finally {
       setIsLoading(false);
@@ -62,8 +61,7 @@ export function useCategories() {
           const { error } = await res.json();
           return { success: false, error };
         }
-      } catch (err) {
-        console.error("카테고리 추가 실패:", err);
+      } catch {
         return { success: false, error: "카테고리 추가에 실패했습니다" };
       }
     },
@@ -90,8 +88,7 @@ export function useCategories() {
           const { error } = await res.json();
           return { success: false, error };
         }
-      } catch (err) {
-        console.error("카테고리 수정 실패:", err);
+      } catch {
         return { success: false, error: "카테고리 수정에 실패했습니다" };
       }
     },
@@ -112,19 +109,10 @@ export function useCategories() {
         const { error } = await res.json();
         return { success: false, error };
       }
-    } catch (err) {
-      console.error("카테고리 삭제 실패:", err);
+    } catch {
       return { success: false, error: "카테고리 삭제에 실패했습니다" };
     }
   }, []);
-
-  // 타입별 카테고리 필터
-  const getCategoriesByType = useCallback(
-    (type: TransactionType) => {
-      return categories.filter((c) => c.type === type);
-    },
-    [categories]
-  );
 
   // ID로 카테고리 조회
   const getCategoryById = useCallback(
@@ -154,7 +142,6 @@ export function useCategories() {
     addCategory,
     updateCategory,
     deleteCategory,
-    getCategoriesByType,
     getCategoryById,
     refetch: fetchCategories,
   };
