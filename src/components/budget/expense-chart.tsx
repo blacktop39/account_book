@@ -23,6 +23,7 @@ export function ExpenseChart({ transactions }: ExpenseChartProps) {
       .map(([categoryId, amount]) => {
         const category = getCategoryById(categoryId);
         return {
+          id: categoryId,
           name: category?.name || "기타",
           value: amount,
           color: category?.color || "#868e96",
@@ -93,7 +94,7 @@ export function ExpenseChart({ transactions }: ExpenseChartProps) {
       {/* Legend */}
       <div className="mt-4 space-y-2">
         {data.map((item) => (
-          <div key={item.name} className="flex items-center justify-between">
+          <div key={item.id} className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div
                 className="w-3 h-3 rounded-full"

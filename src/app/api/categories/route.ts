@@ -63,6 +63,45 @@ export async function GET() {
         },
         orderBy: [{ type: "asc" }, { isDefault: "desc" }, { createdAt: "asc" }],
       });
+    } else {
+      // 기존 사용자: 서브카테고리 없는 기본 카테고리에 서브카테고리 추가
+      let needsRefetch = false;
+      for (const category of categories) {
+        if (category.children && category.children.length > 0) continue;
+
+        // DEFAULT_CATEGORIES에서 매칭되는 카테고리 찾기
+        const defaultCat = DEFAULT_CATEGORIES.find(
+          (dc) => dc.name === category.name && dc.type === category.type
+        );
+
+        if (defaultCat?.children && defaultCat.children.length > 0) {
+          await prisma.category.createMany({
+            data: defaultCat.children.map((child) => ({
+              name: child.name,
+              icon: child.icon,
+              color: child.color,
+              type: category.type,
+              isDefault: true,
+              userId,
+              parentId: category.id,
+            })),
+          });
+          needsRefetch = true;
+        }
+      }
+
+      // 서브카테고리가 추가되었으면 재조회
+      if (needsRefetch) {
+        categories = await prisma.category.findMany({
+          where: { userId, parentId: null },
+          include: {
+            children: {
+              orderBy: { createdAt: "asc" },
+            },
+          },
+          orderBy: [{ type: "asc" }, { isDefault: "desc" }, { createdAt: "asc" }],
+        });
+      }
     }
 
     return NextResponse.json({ categories });
