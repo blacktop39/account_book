@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CategorySelect } from "@/components/ui/category-select";
 import { TransactionType } from "@/lib/budget/types";
 import { getToday } from "@/lib/budget/utils";
 import { Category } from "@/lib/hooks/use-categories";
+import { suggestCategory } from "@/lib/budget/category-matcher";
 
 interface TransactionFormProps {
   type: TransactionType;
@@ -48,6 +49,24 @@ export function TransactionForm({
     amount?: string;
     categoryId?: string;
   }>({});
+
+  // 사용자가 직접 카테고리를 선택했는지 추적
+  const userSelectedCategory = useRef(!!initialData?.categoryId);
+
+  // 내용 기반 카테고리 자동 추천
+  useEffect(() => {
+    // 편집 모드이거나 사용자가 직접 선택한 경우 자동 매칭 안함
+    if (mode === "edit" || userSelectedCategory.current) return;
+    if (!description.trim()) return;
+
+    const suggestion = suggestCategory(description, categories);
+    if (suggestion) {
+      // 서브카테고리가 있으면 서브카테고리 ID, 없으면 부모 ID
+      const suggestedId = suggestion.childId || suggestion.parentId;
+      setCategoryId(suggestedId);
+      setErrors((prev) => ({ ...prev, categoryId: undefined }));
+    }
+  }, [description, categories, mode]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -96,6 +115,7 @@ export function TransactionForm({
         value={categoryId}
         onChange={(value) => {
           setCategoryId(value);
+          userSelectedCategory.current = true; // 사용자가 직접 선택
           setErrors((prev) => ({ ...prev, categoryId: undefined }));
         }}
         placeholder="카테고리 선택"
