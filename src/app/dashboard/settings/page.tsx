@@ -26,6 +26,7 @@ export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState<CategoryTab>("expense");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [addingSubTo, setAddingSubTo] = useState<Category | null>(null);
 
   const categories = activeTab === "income" ? incomeCategories : expenseCategories;
 
@@ -33,11 +34,33 @@ export default function SettingsPage() {
     name: string;
     icon: string;
     color: string;
-    type: TransactionType;
+    type?: TransactionType;
+    parentId?: string;
   }) => {
-    const result = await addCategory(data);
+    const result = await addCategory({
+      ...data,
+      type: data.type || activeTab,
+    });
     if (result.success) {
       setIsAddModalOpen(false);
+    } else {
+      alert(result.error);
+    }
+  };
+
+  const handleAddSubCategory = async (data: {
+    name: string;
+    icon: string;
+    color: string;
+  }) => {
+    if (!addingSubTo) return;
+
+    const result = await addCategory({
+      ...data,
+      parentId: addingSubTo.id,
+    });
+    if (result.success) {
+      setAddingSubTo(null);
     } else {
       alert(result.error);
     }
@@ -136,12 +159,26 @@ export default function SettingsPage() {
               </div>
             ) : (
               categories.map((category) => (
-                <CategoryItem
-                  key={category.id}
-                  category={category}
-                  onEdit={setEditingCategory}
-                  onDelete={handleDeleteCategory}
-                />
+                <div key={category.id}>
+                  {/* 1차 카테고리 */}
+                  <CategoryItem
+                    category={category}
+                    onEdit={setEditingCategory}
+                    onDelete={handleDeleteCategory}
+                    onAddSub={() => setAddingSubTo(category)}
+                  />
+                  {/* 서브카테고리 */}
+                  {category.children?.map((child) => (
+                    <div key={child.id} className="pl-8 bg-white/2">
+                      <CategoryItem
+                        category={child}
+                        onEdit={setEditingCategory}
+                        onDelete={handleDeleteCategory}
+                        isSubCategory
+                      />
+                    </div>
+                  ))}
+                </div>
               ))
             )}
           </div>
@@ -158,6 +195,22 @@ export default function SettingsPage() {
             onSubmit={handleAddCategory}
             onCancel={() => setIsAddModalOpen(false)}
           />
+        </Modal>
+
+        {/* Add Sub Category Modal */}
+        <Modal
+          isOpen={addingSubTo !== null}
+          onClose={() => setAddingSubTo(null)}
+          title={`"${addingSubTo?.name}" 서브카테고리 추가`}
+        >
+          {addingSubTo && (
+            <CategoryForm
+              type={addingSubTo.type}
+              onSubmit={handleAddSubCategory}
+              onCancel={() => setAddingSubTo(null)}
+              hideType
+            />
+          )}
         </Modal>
 
         {/* Edit Modal */}

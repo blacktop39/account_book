@@ -52,6 +52,12 @@ model Category {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
 
-  @@unique([userId, name, type])
+  // 서브카테고리 관계
+  parentId  String?
+  parent    Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
+  children  Category[] @relation("CategoryHierarchy")
+
+  @@unique([userId, name, type, parentId])
   @@index([userId, type])
+  @@index([parentId])
 }

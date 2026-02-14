@@ -8,6 +8,9 @@ export interface Category {
   icon: string;
   color: string;
   type: TransactionType;
+  parentId?: string | null;
+  children?: Category[];
+  isDefault?: boolean;
 }
 
 // 거래 내역

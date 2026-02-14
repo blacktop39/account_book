@@ -20,6 +20,7 @@ import { TransactionList } from "@/components/budget/transaction-list";
 import { TransactionForm } from "@/components/budget/transaction-form";
 import { CalendarView } from "@/components/budget/calendar-view";
 import { useTransactions } from "@/lib/hooks/use-transactions";
+import { useCategories } from "@/lib/hooks/use-categories";
 import { formatMonth, formatDate } from "@/lib/budget/utils";
 import { Transaction, TransactionType } from "@/lib/budget/types";
 
@@ -36,8 +37,16 @@ export default function BudgetPage() {
     addTransaction,
     updateTransaction,
     deleteTransaction,
-    isLoading,
+    isLoading: transactionsLoading,
   } = useTransactions();
+
+  const {
+    incomeCategories,
+    expenseCategories,
+    isLoading: categoriesLoading,
+  } = useCategories();
+
+  const isLoading = transactionsLoading || categoriesLoading;
 
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [modalType, setModalType] = useState<TransactionType | null>(null);
@@ -223,6 +232,7 @@ export default function BudgetPage() {
               type={modalType}
               onSubmit={handleAddTransaction}
               onCancel={() => setModalType(null)}
+              categories={modalType === "income" ? incomeCategories : expenseCategories}
             />
           )}
         </Modal>
@@ -245,6 +255,7 @@ export default function BudgetPage() {
                 date: editingTransaction.date,
               }}
               mode="edit"
+              categories={editingTransaction.type === "income" ? incomeCategories : expenseCategories}
             />
           )}
         </Modal>

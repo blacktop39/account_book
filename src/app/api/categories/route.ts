@@ -12,29 +12,55 @@ export async function GET() {
       return NextResponse.json({ error: "인증이 필요합니다" }, { status: 401 });
     }
 
-    // 사용자 카테고리 조회
+    // 1차 카테고리만 조회 (children 포함)
     let categories = await prisma.category.findMany({
-      where: { userId },
+      where: { userId, parentId: null },
+      include: {
+        children: {
+          orderBy: { createdAt: "asc" },
+        },
+      },
       orderBy: [{ type: "asc" }, { isDefault: "desc" }, { createdAt: "asc" }],
     });
 
     // 카테고리가 없으면 기본 카테고리 생성
     if (categories.length === 0) {
-      const defaultCategories = DEFAULT_CATEGORIES.map((cat) => ({
-        name: cat.name,
-        icon: cat.icon,
-        color: cat.color,
-        type: cat.type,
-        isDefault: true,
-        userId,
-      }));
+      for (const cat of DEFAULT_CATEGORIES) {
+        const parent = await prisma.category.create({
+          data: {
+            name: cat.name,
+            icon: cat.icon,
+            color: cat.color,
+            type: cat.type,
+            isDefault: true,
+            userId,
+          },
+        });
 
-      await prisma.category.createMany({
-        data: defaultCategories,
-      });
+        // 서브카테고리 생성
+        if (cat.children && cat.children.length > 0) {
+          await prisma.category.createMany({
+            data: cat.children.map((child) => ({
+              name: child.name,
+              icon: child.icon,
+              color: child.color,
+              type: cat.type,
+              isDefault: true,
+              userId,
+              parentId: parent.id,
+            })),
+          });
+        }
+      }
 
+      // 재조회
       categories = await prisma.category.findMany({
-        where: { userId },
+        where: { userId, parentId: null },
+        include: {
+          children: {
+            orderBy: { createdAt: "asc" },
+          },
+        },
         orderBy: [{ type: "asc" }, { isDefault: "desc" }, { createdAt: "asc" }],
       });
     }
@@ -59,29 +85,53 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { name, icon, color, type } = body;
+    const { name, icon, color, type, parentId } = body;
 
     // 유효성 검사
-    if (!name || !icon || !color || !type) {
+    if (!name || !icon || !color) {
       return NextResponse.json(
         { error: "모든 필드를 입력해주세요" },
         { status: 400 }
       );
     }
 
-    if (type !== "income" && type !== "expense") {
-      return NextResponse.json(
-        { error: "유효하지 않은 타입입니다" },
-        { status: 400 }
-      );
+    // parentId가 있으면 부모 카테고리 확인
+    let categoryType = type;
+    if (parentId) {
+      const parent = await prisma.category.findFirst({
+        where: { id: parentId, userId },
+      });
+      if (!parent) {
+        return NextResponse.json(
+          { error: "부모 카테고리를 찾을 수 없습니다" },
+          { status: 404 }
+        );
+      }
+      // 2단계 깊이 제한: 부모가 이미 서브카테고리면 불가
+      if (parent.parentId) {
+        return NextResponse.json(
+          { error: "서브카테고리에는 하위 카테고리를 추가할 수 없습니다" },
+          { status: 400 }
+        );
+      }
+      categoryType = parent.type;
+    } else {
+      // 1차 카테고리 생성 시 type 필수
+      if (!type || (type !== "income" && type !== "expense")) {
+        return NextResponse.json(
+          { error: "유효하지 않은 타입입니다" },
+          { status: 400 }
+        );
+      }
     }
 
-    // 중복 검사
+    // 중복 검사 (같은 부모 아래)
     const existing = await prisma.category.findFirst({
       where: {
         userId,
         name,
-        type,
+        type: categoryType,
+        parentId: parentId || null,
       },
     });
 
@@ -97,9 +147,13 @@ export async function POST(request: NextRequest) {
         name,
         icon,
         color,
-        type,
+        type: categoryType,
         isDefault: false,
         userId,
+        parentId: parentId || null,
+      },
+      include: {
+        children: true,
       },
     });
 

@@ -33,13 +33,14 @@ export async function PATCH(
       );
     }
 
-    // 이름 중복 검사 (다른 카테고리와)
+    // 이름 중복 검사 (같은 부모 아래 다른 카테고리와)
     if (name && name !== existing.name) {
       const duplicate = await prisma.category.findFirst({
         where: {
           userId,
           name,
           type: existing.type,
+          parentId: existing.parentId,
           NOT: { id },
         },
       });
@@ -58,6 +59,9 @@ export async function PATCH(
         ...(name && { name }),
         ...(icon && { icon }),
         ...(color && { color }),
+      },
+      include: {
+        children: true,
       },
     });
 

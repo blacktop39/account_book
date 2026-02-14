@@ -22,6 +22,7 @@ interface CategoryFormProps {
     color: string;
   };
   mode?: "add" | "edit";
+  hideType?: boolean;
 }
 
 export function CategoryForm({
@@ -30,6 +31,7 @@ export function CategoryForm({
   onCancel,
   initialData,
   mode = "add",
+  hideType = false,
 }: CategoryFormProps) {
   const [name, setName] = useState(initialData?.name || "");
   const [icon, setIcon] = useState(initialData?.icon || "MoreHorizontal");

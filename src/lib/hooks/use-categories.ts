@@ -11,6 +11,8 @@ export interface Category {
   type: TransactionType;
   isDefault: boolean;
   createdAt: string;
+  parentId: string | null;
+  children?: Category[];
 }
 
 export function useCategories() {
@@ -43,9 +45,15 @@ export function useCategories() {
     fetchCategories();
   }, [fetchCategories]);
 
-  // 카테고리 추가
+  // 카테고리 추가 (서브카테고리 지원)
   const addCategory = useCallback(
-    async (data: { name: string; icon: string; color: string; type: TransactionType }) => {
+    async (data: {
+      name: string;
+      icon: string;
+      color: string;
+      type?: TransactionType;
+      parentId?: string;
+    }) => {
       try {
         const res = await fetch("/api/categories", {
           method: "POST",
@@ -55,7 +63,19 @@ export function useCategories() {
 
         if (res.ok) {
           const { category } = await res.json();
-          setCategories((prev) => [...prev, category]);
+          if (data.parentId) {
+            // 서브카테고리: 부모의 children에 추가
+            setCategories((prev) =>
+              prev.map((c) =>
+                c.id === data.parentId
+                  ? { ...c, children: [...(c.children || []), category] }
+                  : c
+              )
+            );
+          } else {
+            // 1차 카테고리: 배열에 추가
+            setCategories((prev) => [...prev, category]);
+          }
           return { success: true, category };
         } else {
           const { error } = await res.json();
@@ -81,7 +101,17 @@ export function useCategories() {
         if (res.ok) {
           const { category } = await res.json();
           setCategories((prev) =>
-            prev.map((c) => (c.id === id ? category : c))
+            prev.map((c) => {
+              if (c.id === id) return category;
+              // 서브카테고리인 경우
+              if (c.children) {
+                const updatedChildren = c.children.map((child) =>
+                  child.id === id ? category : child
+                );
+                return { ...c, children: updatedChildren };
+              }
+              return c;
+            })
           );
           return { success: true, category };
         } else {
@@ -103,7 +133,14 @@ export function useCategories() {
       });
 
       if (res.ok) {
-        setCategories((prev) => prev.filter((c) => c.id !== id));
+        setCategories((prev) =>
+          prev
+            .filter((c) => c.id !== id)
+            .map((c) => ({
+              ...c,
+              children: c.children?.filter((child) => child.id !== id),
+            }))
+        );
         return { success: true };
       } else {
         const { error } = await res.json();
@@ -114,15 +151,32 @@ export function useCategories() {
     }
   }, []);
 
-  // ID로 카테고리 조회
+  // ID로 카테고리 조회 (서브카테고리 포함)
   const getCategoryById = useCallback(
-    (id: string) => {
-      return categories.find((c) => c.id === id);
+    (id: string): Category | undefined => {
+      for (const cat of categories) {
+        if (cat.id === id) return cat;
+        const child = cat.children?.find((c) => c.id === id);
+        if (child) return child;
+      }
+      return undefined;
     },
     [categories]
   );
 
-  // 수입/지출 카테고리 분리
+  // 플랫 리스트 (모든 카테고리)
+  const flatCategories = useMemo(() => {
+    const result: Category[] = [];
+    for (const cat of categories) {
+      result.push(cat);
+      if (cat.children) {
+        result.push(...cat.children);
+      }
+    }
+    return result;
+  }, [categories]);
+
+  // 수입/지출 카테고리 분리 (1차 카테고리만)
   const incomeCategories = useMemo(
     () => categories.filter((c) => c.type === "income"),
     [categories]
@@ -135,6 +189,7 @@ export function useCategories() {
 
   return {
     categories,
+    flatCategories,
     incomeCategories,
     expenseCategories,
     isLoading,
