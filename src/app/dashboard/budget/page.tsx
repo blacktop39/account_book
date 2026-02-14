@@ -41,6 +41,7 @@ export default function BudgetPage() {
   } = useTransactions();
 
   const {
+    categories,
     incomeCategories,
     expenseCategories,
     isLoading: categoriesLoading,
@@ -186,6 +187,7 @@ export default function BudgetPage() {
             groupedTransactions={groupedTransactions}
             onEdit={handleEdit}
             onDelete={deleteTransaction}
+            categories={categories}
           />
         ) : (
           <div className="space-y-6">
@@ -208,6 +210,7 @@ export default function BudgetPage() {
                     groupedTransactions={selectedDateGrouped}
                     onEdit={handleEdit}
                     onDelete={deleteTransaction}
+                    categories={categories}
                   />
                 ) : (
                   <div className="py-8 text-center bg-[var(--surface)] border border-[var(--border)] rounded-xl">

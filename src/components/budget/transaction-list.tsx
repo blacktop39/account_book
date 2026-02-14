@@ -3,19 +3,35 @@
 import { Transaction } from "@/lib/budget/types";
 import { formatDate } from "@/lib/budget/utils";
 import { TransactionItem } from "./transaction-item";
+import { Category } from "@/lib/hooks/use-categories";
 
 interface TransactionListProps {
   groupedTransactions: Record<string, Transaction[]>;
   onEdit?: (transaction: Transaction) => void;
   onDelete?: (id: string) => void;
+  categories?: Category[];
 }
 
 export function TransactionList({
   groupedTransactions,
   onEdit,
   onDelete,
+  categories,
 }: TransactionListProps) {
   const dates = Object.keys(groupedTransactions);
+
+  // 플랫 카테고리 맵 생성 (ID -> Category)
+  const categoryMap = new Map<string, Category>();
+  if (categories) {
+    for (const cat of categories) {
+      categoryMap.set(cat.id, cat);
+      if (cat.children) {
+        for (const child of cat.children) {
+          categoryMap.set(child.id, child);
+        }
+      }
+    }
+  }
 
   if (dates.length === 0) {
     return (
@@ -40,6 +56,7 @@ export function TransactionList({
               <TransactionItem
                 key={transaction.id}
                 transaction={transaction}
+                category={categoryMap.get(transaction.categoryId)}
                 onEdit={onEdit}
                 onDelete={onDelete}
               />

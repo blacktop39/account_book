@@ -5,15 +5,18 @@ import { cn } from "@/lib/utils";
 import { Transaction } from "@/lib/budget/types";
 import { formatAmount } from "@/lib/budget/utils";
 import { CategoryBadge } from "./category-badge";
+import { Category } from "@/lib/hooks/use-categories";
 
 interface TransactionItemProps {
   transaction: Transaction;
+  category?: Category;
   onEdit?: (transaction: Transaction) => void;
   onDelete?: (id: string) => void;
 }
 
 export function TransactionItem({
   transaction,
+  category,
   onEdit,
   onDelete,
 }: TransactionItemProps) {
@@ -22,13 +25,14 @@ export function TransactionItem({
   return (
     <div className="group flex items-center justify-between py-3 px-4 hover:bg-white/5 rounded-lg transition-colors">
       <div className="flex items-center gap-3">
-        <CategoryBadge categoryId={transaction.categoryId} showLabel={false} />
+        <CategoryBadge categoryId={transaction.categoryId} category={category} showLabel={false} />
         <div>
           <p className="text-sm font-medium">
             {transaction.description || "내역 없음"}
           </p>
           <CategoryBadge
             categoryId={transaction.categoryId}
+            category={category}
             showLabel={true}
             size="sm"
             className="mt-0.5"
