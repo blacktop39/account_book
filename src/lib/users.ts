@@ -14,7 +14,7 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  password: string;
+  password: string | null;  // OAuth 사용자는 null
   image?: string | null;
 }
 
@@ -57,8 +57,8 @@ export async function verifyUser(
   password: string
 ): Promise<User | null> {
   const user = await findUserByEmail(email);
-  if (!user) {
-    return null;
+  if (!user || !user.password) {
+    return null;  // OAuth 사용자는 비밀번호 로그인 불가
   }
 
   const isValid = await compare(password, user.password);

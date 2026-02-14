@@ -10,13 +10,32 @@ model User {
   id           String        @id @default(cuid())
   email        String        @unique
   name         String
-  password     String
+  password     String?       // OAuth 사용자는 password 없음
   image        String?
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   transactions Transaction[]
   resetTokens  ResetToken[]
   categories   Category[]
+  accounts     Account[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
 }
 
 model Transaction {
