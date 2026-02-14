@@ -67,14 +67,15 @@ export async function GET() {
       // 기존 사용자: 서브카테고리 없는 기본 카테고리에 서브카테고리 추가
       let needsRefetch = false;
       for (const category of categories) {
-        if (category.children && category.children.length > 0) continue;
-
         // DEFAULT_CATEGORIES에서 매칭되는 카테고리 찾기
         const defaultCat = DEFAULT_CATEGORIES.find(
           (dc) => dc.name === category.name && dc.type === category.type
         );
 
-        if (defaultCat?.children && defaultCat.children.length > 0) {
+        if (!defaultCat?.children) continue;
+
+        // 서브카테고리가 없으면 생성
+        if (!category.children || category.children.length === 0) {
           await prisma.category.createMany({
             data: defaultCat.children.map((child) => ({
               name: child.name,
@@ -87,10 +88,26 @@ export async function GET() {
             })),
           });
           needsRefetch = true;
+        } else {
+          // 기존 서브카테고리의 아이콘이 없으면 업데이트
+          for (const child of category.children) {
+            if (!child.icon || child.icon === "") {
+              const defaultChild = defaultCat.children.find(
+                (dc) => dc.name === child.name
+              );
+              if (defaultChild) {
+                await prisma.category.update({
+                  where: { id: child.id },
+                  data: { icon: defaultChild.icon, color: defaultChild.color },
+                });
+                needsRefetch = true;
+              }
+            }
+          }
         }
       }
 
-      // 서브카테고리가 추가되었으면 재조회
+      // 서브카테고리가 추가/수정되었으면 재조회
       if (needsRefetch) {
         categories = await prisma.category.findMany({
           where: { userId, parentId: null },
