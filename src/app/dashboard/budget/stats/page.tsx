@@ -10,44 +10,67 @@ import { MonthComparison } from "@/components/budget/month-comparison";
 import { YearlySummary } from "@/components/budget/yearly-summary";
 import { CategoryBadge } from "@/components/budget/category-badge";
 import { useTransactions } from "@/lib/hooks/use-transactions";
+import { useCategories, Category } from "@/lib/hooks/use-categories";
 import { formatAmount, formatMonth } from "@/lib/budget/utils";
 
 type TabType = "monthly" | "yearly";
 
 export default function StatsPage() {
-  const { transactions, monthTransactions, currentMonth, isLoading } =
+  const { transactions, monthTransactions, currentMonth, isLoading: transactionsLoading } =
     useTransactions();
+  const { categories, expenseCategories, incomeCategories, isLoading: categoriesLoading } =
+    useCategories();
   const [activeTab, setActiveTab] = useState<TabType>("monthly");
 
-  // 상위 지출 카테고리
+  const isLoading = transactionsLoading || categoriesLoading;
+
+  // 카테고리 ID → 부모 카테고리 매핑
+  const categoryToParent = useMemo(() => {
+    const map: Record<string, Category> = {};
+    for (const cat of categories) {
+      map[cat.id] = cat;
+      if (cat.children) {
+        for (const child of cat.children) {
+          map[child.id] = cat;
+        }
+      }
+    }
+    return map;
+  }, [categories]);
+
+  // 상위 지출 카테고리 (부모 카테고리 기준)
   const topExpenses = useMemo(() => {
     const expenses = monthTransactions.filter((t) => t.type === "expense");
-    const byCategory: Record<string, number> = {};
+    const byParent: Record<string, number> = {};
 
     for (const t of expenses) {
-      byCategory[t.categoryId] = (byCategory[t.categoryId] || 0) + t.amount;
+      const parent = categoryToParent[t.categoryId];
+      const parentId = parent?.id || t.categoryId;
+      byParent[parentId] = (byParent[parentId] || 0) + t.amount;
     }
 
-    return Object.entries(byCategory)
+    return Object.entries(byParent)
       .map(([categoryId, amount]) => ({ categoryId, amount }))
       .sort((a, b) => b.amount - a.amount)
       .slice(0, 5);
-  }, [monthTransactions]);
+  }, [monthTransactions, categoryToParent]);
 
-  // 상위 수입 카테고리
+  // 상위 수입 카테고리 (부모 카테고리 기준)
   const topIncomes = useMemo(() => {
     const incomes = monthTransactions.filter((t) => t.type === "income");
-    const byCategory: Record<string, number> = {};
+    const byParent: Record<string, number> = {};
 
     for (const t of incomes) {
-      byCategory[t.categoryId] = (byCategory[t.categoryId] || 0) + t.amount;
+      const parent = categoryToParent[t.categoryId];
+      const parentId = parent?.id || t.categoryId;
+      byParent[parentId] = (byParent[parentId] || 0) + t.amount;
     }
 
-    return Object.entries(byCategory)
+    return Object.entries(byParent)
       .map(([categoryId, amount]) => ({ categoryId, amount }))
       .sort((a, b) => b.amount - a.amount)
       .slice(0, 5);
-  }, [monthTransactions]);
+  }, [monthTransactions, categoryToParent]);
 
   if (isLoading) {
     return (
@@ -112,8 +135,8 @@ export default function StatsPage() {
 
             {/* 카테고리별 차트 - 그리드 */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <ExpenseChart transactions={monthTransactions} />
-              <IncomeChart transactions={monthTransactions} />
+              <ExpenseChart transactions={monthTransactions} categories={expenseCategories} />
+              <IncomeChart transactions={monthTransactions} categories={incomeCategories} />
             </div>
 
             {/* 상위 카테고리 - 그리드 */}
@@ -139,6 +162,7 @@ export default function StatsPage() {
                           </span>
                           <CategoryBadge
                             categoryId={item.categoryId}
+                            categories={expenseCategories}
                             size="sm"
                           />
                         </div>
@@ -172,6 +196,7 @@ export default function StatsPage() {
                           </span>
                           <CategoryBadge
                             categoryId={item.categoryId}
+                            categories={incomeCategories}
                             size="sm"
                           />
                         </div>

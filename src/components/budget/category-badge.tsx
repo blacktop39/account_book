@@ -88,11 +88,13 @@ interface CategoryData {
   name: string;
   icon: string;
   color: string;
+  children?: CategoryData[];
 }
 
 interface CategoryBadgeProps {
   categoryId: string;
   category?: CategoryData;
+  categories?: CategoryData[];
   showLabel?: boolean;
   size?: "sm" | "md";
   className?: string;
@@ -101,12 +103,23 @@ interface CategoryBadgeProps {
 export function CategoryBadge({
   categoryId,
   category: externalCategory,
+  categories = [],
   showLabel = true,
   size = "md",
   className,
 }: CategoryBadgeProps) {
-  // 외부 카테고리가 있으면 사용, 없으면 기본 카테고리에서 조회
-  const category = externalCategory || getCategoryById(categoryId);
+  // 카테고리 조회 함수
+  const findCategory = (id: string): CategoryData | null => {
+    for (const cat of categories) {
+      if (cat.id === id) return cat;
+      const child = cat.children?.find((c) => c.id === id);
+      if (child) return child;
+    }
+    return null;
+  };
+
+  // 외부 카테고리 > DB 카테고리 > 기본 카테고리 순으로 조회
+  const category = externalCategory || findCategory(categoryId) || getCategoryById(categoryId);
 
   if (!category) {
     return (
