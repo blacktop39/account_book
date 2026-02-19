@@ -10,7 +10,7 @@ import {
   List,
   Calendar,
   BarChart3,
-  ArrowLeft,
+  Settings,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
@@ -105,20 +105,21 @@ export default function BudgetPage() {
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <header className="flex items-center justify-between mb-6">
-          <Link
-            href="/dashboard"
-            className="flex items-center gap-2 text-[var(--text-secondary)] hover:text-white transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            <span className="text-sm">대시보드</span>
-          </Link>
+          <h2 className="text-lg font-semibold">가계부</h2>
 
-          <Link href="/dashboard/budget/stats">
-            <Button variant="ghost" size="sm">
-              <BarChart3 className="w-4 h-4 mr-2" />
-              통계
-            </Button>
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link href="/dashboard/budget/stats">
+              <Button variant="ghost" size="sm">
+                <BarChart3 className="w-4 h-4 mr-2" />
+                통계
+              </Button>
+            </Link>
+            <Link href="/dashboard/settings">
+              <Button variant="ghost" size="sm">
+                <Settings className="w-4 h-4" />
+              </Button>
+            </Link>
+          </div>
         </header>
 
         {/* Month Navigation */}
