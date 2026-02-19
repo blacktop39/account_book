@@ -40,7 +40,7 @@ export const authConfig: NextAuthConfig = {
       }
 
       if (isAuthRoute && isLoggedIn) {
-        return Response.redirect(new URL("/dashboard", nextUrl));
+        return Response.redirect(new URL("/dashboard/budget", nextUrl));
       }
 
       return true;
