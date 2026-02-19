@@ -95,7 +95,7 @@ export default function SignupPage() {
       });
 
       if (result?.ok) {
-        router.push("/dashboard");
+        router.push("/budget");
         router.refresh();
       } else {
         // 회원가입은 성공했지만 로그인 실패 시 로그인 페이지로

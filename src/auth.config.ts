@@ -27,7 +27,7 @@ export const authConfig: NextAuthConfig = {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
 
-      const protectedRoutes = ["/dashboard"];
+      const protectedRoutes = ["/budget", "/settings"];
       const isProtectedRoute = protectedRoutes.some((route) =>
         nextUrl.pathname.startsWith(route)
       );
@@ -40,7 +40,7 @@ export const authConfig: NextAuthConfig = {
       }
 
       if (isAuthRoute && isLoggedIn) {
-        return Response.redirect(new URL("/dashboard/budget", nextUrl));
+        return Response.redirect(new URL("/budget", nextUrl));
       }
 
       return true;

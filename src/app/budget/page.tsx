@@ -108,13 +108,13 @@ export default function BudgetPage() {
           <h2 className="text-lg font-semibold">가계부</h2>
 
           <div className="flex items-center gap-2">
-            <Link href="/dashboard/budget/stats">
+            <Link href="/budget/stats">
               <Button variant="ghost" size="sm">
                 <BarChart3 className="w-4 h-4 mr-2" />
                 통계
               </Button>
             </Link>
-            <Link href="/dashboard/settings">
+            <Link href="/settings">
               <Button variant="ghost" size="sm">
                 <Settings className="w-4 h-4" />
               </Button>

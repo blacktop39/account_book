@@ -41,7 +41,7 @@ export function SocialButton({ provider, className }: SocialButtonProps) {
 
   const handleClick = async () => {
     setIsLoading(true);
-    await signIn(provider, { callbackUrl: "/dashboard" });
+    await signIn(provider, { callbackUrl: "/budget" });
   };
 
   return (

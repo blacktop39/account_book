@@ -110,11 +110,11 @@ export default function SettingsPage() {
         {/* Header */}
         <header className="flex items-center justify-between mb-8">
           <Link
-            href="/dashboard"
+            href="/budget"
             className="flex items-center gap-2 text-[var(--text-secondary)] hover:text-white transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
-            <span className="text-sm">대시보드</span>
+            <span className="text-sm">가계부</span>
           </Link>
         </header>
 

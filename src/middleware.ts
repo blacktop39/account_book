@@ -7,7 +7,8 @@ export default NextAuth(authConfig).auth;
 export const config = {
   matcher: [
     // 보호할 경로
-    "/dashboard/:path*",
+    "/budget/:path*",
+    "/settings/:path*",
     // 인증 페이지
     "/",
     "/signup",
