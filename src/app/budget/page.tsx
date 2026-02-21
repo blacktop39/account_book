@@ -102,10 +102,10 @@ export default function BudgetPage() {
   }
 
   return (
-    <main className="min-h-screen p-4 md:p-8">
+    <main className="min-h-screen px-4 md:px-8 pt-8 md:pt-16 pb-8">
       <div className="max-w-2xl mx-auto">
         {/* Header */}
-        <header className="flex items-center justify-between mb-6">
+        <header className="flex items-center justify-between mb-8">
           <h2 className="text-lg font-semibold">가계부</h2>
 
           <div className="flex items-center gap-2">
@@ -124,7 +124,7 @@ export default function BudgetPage() {
         </header>
 
         {/* Month Navigation */}
-        <div className="flex items-center justify-center gap-4 mb-6">
+        <div className="flex items-center justify-center gap-4 mb-8">
           <button
             onClick={goToPrevMonth}
             className="p-2 rounded-lg hover:bg-white/10 transition-colors"
@@ -143,10 +143,10 @@ export default function BudgetPage() {
         </div>
 
         {/* Month Summary */}
-        <MonthSummary summary={summary} className="mb-6" />
+        <MonthSummary summary={summary} className="mb-8" />
 
         {/* Add Buttons */}
-        <div className="grid grid-cols-2 gap-3 mb-6">
+        <div className="grid grid-cols-2 gap-3 mb-8">
           <Button
             variant="secondary"
             onClick={() => setModalType("income")}
@@ -180,7 +180,7 @@ export default function BudgetPage() {
             setViewMode(id as ViewMode);
             setSelectedDate(null);
           }}
-          className="mb-6"
+          className="mb-8"
         />
 
         {/* Content */}

@@ -106,7 +106,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <main className="min-h-screen p-4 md:p-8">
+    <main className="min-h-screen px-4 md:px-8 pt-8 md:pt-16 pb-8">
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <header className="flex items-center justify-between mb-8">
@@ -119,7 +119,7 @@ export default function SettingsPage() {
           </Link>
         </header>
 
-        <h1 className="text-2xl font-bold mb-6">설정</h1>
+        <h1 className="text-2xl font-bold mb-8">설정</h1>
 
         {/* Category Section */}
         <section className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-6">

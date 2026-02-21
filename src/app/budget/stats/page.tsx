@@ -82,10 +82,10 @@ export default function StatsPage() {
   }
 
   return (
-    <main className="min-h-screen p-4 md:p-8">
+    <main className="min-h-screen px-4 md:px-8 pt-8 md:pt-16 pb-8">
       <div className="max-w-2xl mx-auto">
         {/* Header */}
-        <header className="flex items-center gap-4 mb-6">
+        <header className="flex items-center gap-4 mb-8">
           <Link
             href="/budget"
             className="p-2 rounded-lg hover:bg-white/10 transition-colors"
@@ -101,7 +101,7 @@ export default function StatsPage() {
         </header>
 
         {/* Tab Navigation */}
-        <div className="flex gap-2 mb-6">
+        <div className="flex gap-2 mb-8">
           <button
             onClick={() => setActiveTab("monthly")}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
