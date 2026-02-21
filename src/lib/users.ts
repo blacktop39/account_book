@@ -46,7 +46,8 @@ export async function createUser(
       privacyAgreedAt: privacyAgreed ? now : null,
       marketingAgreed: marketingAgreed || false,
       marketingAgreedAt: marketingAgreed ? now : null,
-      emailVerified: false, // 이메일 미인증 상태로 생성
+      emailVerified: true, // 임시: 도메인 없어서 자동 인증 처리
+      emailVerifiedAt: now,
     },
   });
 

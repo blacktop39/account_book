@@ -58,19 +58,23 @@ export async function POST(request: Request) {
 
     const { user, verificationToken } = result;
 
-    // 이메일 인증 링크 전송
-    try {
-      await sendVerificationEmail(email, verificationToken);
-    } catch (error) {
-      console.error("이메일 전송 실패:", error);
-      // 이메일 전송 실패해도 회원가입은 성공으로 처리
-    }
+    // 임시: 도메인 없어서 이메일 인증 비활성화
+    // TODO: 도메인 구매 후 아래 주석 해제
+    // try {
+    //   await sendVerificationEmail(email, verificationToken);
+    // } catch (error) {
+    //   console.error("이메일 전송 실패:", error);
+    // }
+
+    // 사용하지 않는 변수 경고 방지
+    void verificationToken;
+    void sendVerificationEmail;
 
     return NextResponse.json(
       {
         message: "회원가입 성공",
         user: sanitizeUser(user),
-        emailSent: true,
+        emailSent: false,
       },
       { status: 201 }
     );
