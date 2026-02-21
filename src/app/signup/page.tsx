@@ -9,6 +9,7 @@ import { Logo } from "@/components/auth/logo";
 import { SocialButton } from "@/components/auth/social-button";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Divider } from "@/components/ui/divider";
 
 interface FormErrors {
@@ -16,6 +17,8 @@ interface FormErrors {
   email?: string;
   password?: string;
   confirmPassword?: string;
+  terms?: string;
+  privacy?: string;
   general?: string;
 }
 
@@ -25,8 +28,20 @@ export default function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [termsAgreed, setTermsAgreed] = useState(false);
+  const [privacyAgreed, setPrivacyAgreed] = useState(false);
+  const [marketingAgreed, setMarketingAgreed] = useState(false);
+  const [allAgreed, setAllAgreed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
+
+  // 전체 동의 처리
+  const handleAllAgreed = (checked: boolean) => {
+    setAllAgreed(checked);
+    setTermsAgreed(checked);
+    setPrivacyAgreed(checked);
+    setMarketingAgreed(checked);
+  };
 
   const validateForm = () => {
     const newErrors: FormErrors = {};
@@ -53,6 +68,14 @@ export default function SignupPage() {
       newErrors.confirmPassword = "비밀번호가 일치하지 않습니다";
     }
 
+    if (!termsAgreed) {
+      newErrors.terms = "서비스 이용약관에 동의해주세요";
+    }
+
+    if (!privacyAgreed) {
+      newErrors.privacy = "개인정보 처리방침에 동의해주세요";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -69,7 +92,14 @@ export default function SignupPage() {
       const response = await fetch("/api/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, name, password }),
+        body: JSON.stringify({
+          email,
+          name,
+          password,
+          termsAgreed,
+          privacyAgreed,
+          marketingAgreed,
+        }),
       });
 
       const data = await response.json();
@@ -165,6 +195,74 @@ export default function SignupPage() {
             error={errors.confirmPassword}
             autoComplete="new-password"
           />
+
+          {/* 약관 동의 */}
+          <div className="space-y-3 pt-2">
+            <div className="pb-2 border-b border-[var(--border)]">
+              <Checkbox
+                id="allAgreed"
+                label="전체 동의"
+                checked={allAgreed}
+                onChange={(e) => handleAllAgreed(e.target.checked)}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Checkbox
+                  id="terms"
+                  label="서비스 이용약관 (필수)"
+                  checked={termsAgreed}
+                  onChange={(e) => {
+                    setTermsAgreed(e.target.checked);
+                    if (!e.target.checked) setAllAgreed(false);
+                  }}
+                />
+                <Link
+                  href="/terms"
+                  target="_blank"
+                  className="text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] underline"
+                >
+                  보기
+                </Link>
+              </div>
+              {errors.terms && (
+                <p className="text-xs text-[var(--error)] ml-6">{errors.terms}</p>
+              )}
+
+              <div className="flex items-center justify-between">
+                <Checkbox
+                  id="privacy"
+                  label="개인정보 처리방침 (필수)"
+                  checked={privacyAgreed}
+                  onChange={(e) => {
+                    setPrivacyAgreed(e.target.checked);
+                    if (!e.target.checked) setAllAgreed(false);
+                  }}
+                />
+                <Link
+                  href="/privacy"
+                  target="_blank"
+                  className="text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] underline"
+                >
+                  보기
+                </Link>
+              </div>
+              {errors.privacy && (
+                <p className="text-xs text-[var(--error)] ml-6">{errors.privacy}</p>
+              )}
+
+              <Checkbox
+                id="marketing"
+                label="마케팅 정보 수신 동의 (선택)"
+                checked={marketingAgreed}
+                onChange={(e) => {
+                  setMarketingAgreed(e.target.checked);
+                  if (!e.target.checked) setAllAgreed(false);
+                }}
+              />
+            </div>
+          </div>
 
           <Button
             type="submit"

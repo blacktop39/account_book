@@ -22,7 +22,10 @@ export interface User {
 export async function createUser(
   email: string,
   name: string,
-  password: string
+  password: string,
+  termsAgreed?: boolean,
+  privacyAgreed?: boolean,
+  marketingAgreed?: boolean
 ): Promise<User | null> {
   const existingUser = await findUserByEmail(email);
   if (existingUser) {
@@ -30,12 +33,17 @@ export async function createUser(
   }
 
   const hashedPassword = await hash(password, 10);
+  const now = new Date();
 
   const user = await prisma.user.create({
     data: {
       email,
       name,
       password: hashedPassword,
+      termsAgreedAt: termsAgreed ? now : null,
+      privacyAgreedAt: privacyAgreed ? now : null,
+      marketingAgreed: marketingAgreed || false,
+      marketingAgreedAt: marketingAgreed ? now : null,
     },
   });
 

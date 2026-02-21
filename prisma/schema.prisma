@@ -7,13 +7,18 @@ datasource db {
 }
 
 model User {
-  id           String        @id @default(cuid())
-  email        String        @unique
-  name         String
-  password     String?       // OAuth 사용자는 password 없음
-  image        String?
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  id                  String        @id @default(cuid())
+  email               String        @unique
+  name                String
+  password            String?       // OAuth 사용자는 password 없음
+  image               String?
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+  // 약관 동의
+  termsAgreedAt       DateTime?     // 서비스 이용약관 동의 시각
+  privacyAgreedAt     DateTime?     // 개인정보 처리방침 동의 시각
+  marketingAgreed     Boolean       @default(false) // 마케팅 수신 동의
+  marketingAgreedAt   DateTime?     // 마케팅 수신 동의 시각
   transactions Transaction[]
   resetTokens  ResetToken[]
   categories   Category[]

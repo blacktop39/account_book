@@ -4,7 +4,7 @@ import { createUser, sanitizeUser } from "@/lib/users";
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { email, name, password } = body;
+    const { email, name, password, termsAgreed, privacyAgreed, marketingAgreed } = body;
 
     // 입력 검증
     if (!email || !name || !password) {
@@ -30,8 +30,23 @@ export async function POST(request: Request) {
       );
     }
 
+    // 필수 약관 동의 검증
+    if (!termsAgreed) {
+      return NextResponse.json(
+        { error: "서비스 이용약관에 동의해주세요" },
+        { status: 400 }
+      );
+    }
+
+    if (!privacyAgreed) {
+      return NextResponse.json(
+        { error: "개인정보 처리방침에 동의해주세요" },
+        { status: 400 }
+      );
+    }
+
     // 사용자 생성
-    const user = await createUser(email, name, password);
+    const user = await createUser(email, name, password, termsAgreed, privacyAgreed, marketingAgreed);
 
     if (!user) {
       return NextResponse.json(
