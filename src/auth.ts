@@ -11,6 +11,21 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
 
+  events: {
+    // OAuth 로그인 시 이메일 자동 인증
+    async signIn({ user, account }) {
+      if (account?.provider === "google" && user.email) {
+        await prisma.user.update({
+          where: { email: user.email },
+          data: {
+            emailVerified: true,
+            emailVerifiedAt: new Date(),
+          },
+        });
+      }
+    },
+  },
+
   providers: [
     // Google OAuth
     Google({
@@ -36,6 +51,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const user = await verifyUser(email, password);
         if (!user) {
           return null;
+        }
+
+        // 이메일 인증 체크
+        const dbUser = await prisma.user.findUnique({
+          where: { email },
+          select: { emailVerified: true },
+        });
+
+        if (dbUser && !dbUser.emailVerified) {
+          throw new Error("EMAIL_NOT_VERIFIED");
         }
 
         return {

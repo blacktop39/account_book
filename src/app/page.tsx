@@ -18,6 +18,8 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isResending, setIsResending] = useState(false);
+  const [showResendButton, setShowResendButton] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string; general?: string }>({});
 
   const validateForm = () => {
@@ -46,6 +48,7 @@ export default function LoginPage() {
 
     setIsLoading(true);
     setErrors({});
+    setShowResendButton(false);
 
     const result = await signIn("credentials", {
       email,
@@ -56,10 +59,46 @@ export default function LoginPage() {
     setIsLoading(false);
 
     if (result?.error) {
-      setErrors({ general: "이메일 또는 비밀번호가 올바르지 않습니다" });
+      // 이메일 미인증 에러 처리
+      if (result.error === "EMAIL_NOT_VERIFIED") {
+        setErrors({
+          general: "이메일 인증이 필요합니다. 가입 시 받은 인증 이메일을 확인해주세요.",
+        });
+        setShowResendButton(true);
+      } else {
+        setErrors({ general: "이메일 또는 비밀번호가 올바르지 않습니다" });
+      }
     } else if (result?.ok) {
       router.push("/budget");
       router.refresh();
+    }
+  };
+
+  const handleResendVerification = async () => {
+    if (!email || isResending) return;
+
+    setIsResending(true);
+
+    try {
+      const response = await fetch("/api/send-verification-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      if (response.ok) {
+        setErrors({
+          general: "인증 이메일이 재전송되었습니다. 이메일을 확인해주세요.",
+        });
+        setShowResendButton(false);
+      } else {
+        const data = await response.json();
+        setErrors({ general: data.error || "이메일 전송에 실패했습니다" });
+      }
+    } catch {
+      setErrors({ general: "서버 오류가 발생했습니다" });
+    } finally {
+      setIsResending(false);
     }
   };
 
@@ -83,8 +122,21 @@ export default function LoginPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {errors.general && (
-            <div className="p-3 rounded-lg bg-[var(--error)]/10 border border-[var(--error)]/20">
-              <p className="text-sm text-[var(--error)]">{errors.general}</p>
+            <div className="space-y-2">
+              <div className="p-3 rounded-lg bg-[var(--error)]/10 border border-[var(--error)]/20">
+                <p className="text-sm text-[var(--error)]">{errors.general}</p>
+              </div>
+              {showResendButton && (
+                <Button
+                  type="button"
+                  variant="secondary"
+                  className="w-full"
+                  onClick={handleResendVerification}
+                  isLoading={isResending}
+                >
+                  인증 이메일 다시 받기
+                </Button>
+              )}
             </div>
           )}
 

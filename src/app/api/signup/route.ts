@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createUser, sanitizeUser } from "@/lib/users";
+import { sendVerificationEmail } from "@/lib/email";
 
 export async function POST(request: Request) {
   try {
@@ -46,17 +47,31 @@ export async function POST(request: Request) {
     }
 
     // 사용자 생성
-    const user = await createUser(email, name, password, termsAgreed, privacyAgreed, marketingAgreed);
+    const result = await createUser(email, name, password, termsAgreed, privacyAgreed, marketingAgreed);
 
-    if (!user) {
+    if (!result) {
       return NextResponse.json(
         { error: "이미 가입된 이메일입니다" },
         { status: 409 }
       );
     }
 
+    const { user, verificationToken } = result;
+
+    // 이메일 인증 링크 전송
+    try {
+      await sendVerificationEmail(email, verificationToken);
+    } catch (error) {
+      console.error("이메일 전송 실패:", error);
+      // 이메일 전송 실패해도 회원가입은 성공으로 처리
+    }
+
     return NextResponse.json(
-      { message: "회원가입 성공", user: sanitizeUser(user) },
+      {
+        message: "회원가입 성공",
+        user: sanitizeUser(user),
+        emailSent: true,
+      },
       { status: 201 }
     );
   } catch (error) {

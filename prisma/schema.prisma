@@ -19,8 +19,12 @@ model User {
   privacyAgreedAt     DateTime?     // 개인정보 처리방침 동의 시각
   marketingAgreed     Boolean       @default(false) // 마케팅 수신 동의
   marketingAgreedAt   DateTime?     // 마케팅 수신 동의 시각
+  // 이메일 인증
+  emailVerified       Boolean       @default(false) // 이메일 인증 여부
+  emailVerifiedAt     DateTime?     // 이메일 인증 시각
   transactions Transaction[]
   resetTokens  ResetToken[]
+  emailVerificationTokens EmailVerificationToken[]
   categories   Category[]
   accounts     Account[]
 }
@@ -64,6 +68,16 @@ model ResetToken {
   expiresAt DateTime
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model EmailVerificationToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  expiresAt DateTime
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model Category {

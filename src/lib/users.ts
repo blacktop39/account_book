@@ -16,6 +16,8 @@ export interface User {
   name: string;
   password: string | null;  // OAuth 사용자는 null
   image?: string | null;
+  emailVerified: boolean;
+  emailVerifiedAt?: Date | null;
 }
 
 // 사용자 생성
@@ -26,7 +28,7 @@ export async function createUser(
   termsAgreed?: boolean,
   privacyAgreed?: boolean,
   marketingAgreed?: boolean
-): Promise<User | null> {
+): Promise<{ user: User; verificationToken: string } | null> {
   const existingUser = await findUserByEmail(email);
   if (existingUser) {
     return null;
@@ -44,10 +46,14 @@ export async function createUser(
       privacyAgreedAt: privacyAgreed ? now : null,
       marketingAgreed: marketingAgreed || false,
       marketingAgreedAt: marketingAgreed ? now : null,
+      emailVerified: false, // 이메일 미인증 상태로 생성
     },
   });
 
-  return user;
+  // 이메일 인증 토큰 생성
+  const verificationToken = await createEmailVerificationToken(user.id);
+
+  return { user, verificationToken };
 }
 
 // 이메일로 사용자 찾기
@@ -167,4 +173,83 @@ export async function resetPassword(
   });
 
   return true;
+}
+
+// 이메일 인증 토큰 생성
+export async function createEmailVerificationToken(
+  userId: string
+): Promise<string> {
+  // 기존 토큰 삭제
+  await prisma.emailVerificationToken.deleteMany({
+    where: { userId },
+  });
+
+  // 암호학적으로 안전한 토큰 생성 (Edge Runtime 호환)
+  const token = generateSecureToken();
+  const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24시간
+
+  await prisma.emailVerificationToken.create({
+    data: {
+      token,
+      expiresAt,
+      userId,
+    },
+  });
+
+  return token;
+}
+
+// 이메일 인증 토큰 검증 및 이메일 인증 완료
+export async function verifyEmailToken(token: string): Promise<boolean> {
+  const verificationToken = await prisma.emailVerificationToken.findUnique({
+    where: { token },
+    include: { user: true },
+  });
+
+  if (!verificationToken) {
+    return false;
+  }
+
+  if (new Date() > verificationToken.expiresAt) {
+    // 만료된 토큰 삭제
+    await prisma.emailVerificationToken.delete({
+      where: { id: verificationToken.id },
+    });
+    return false;
+  }
+
+  // 이메일 인증 완료
+  await prisma.user.update({
+    where: { id: verificationToken.userId },
+    data: {
+      emailVerified: true,
+      emailVerifiedAt: new Date(),
+    },
+  });
+
+  // 사용된 토큰 삭제
+  await prisma.emailVerificationToken.delete({
+    where: { id: verificationToken.id },
+  });
+
+  return true;
+}
+
+// 이메일 인증 재발송
+export async function resendVerificationEmail(
+  email: string
+): Promise<string | null> {
+  const user = await findUserByEmail(email);
+  if (!user) {
+    return null;
+  }
+
+  // 이미 인증된 사용자
+  if (user.emailVerified) {
+    return null;
+  }
+
+  // 새 토큰 생성
+  const token = await createEmailVerificationToken(user.id);
+  return token;
 }

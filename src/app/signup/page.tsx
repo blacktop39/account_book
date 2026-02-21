@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { signIn } from "next-auth/react";
 import { AuthCard } from "@/components/auth/auth-card";
 import { Logo } from "@/components/auth/logo";
 import { SocialButton } from "@/components/auth/social-button";
@@ -110,20 +109,8 @@ export default function SignupPage() {
         return;
       }
 
-      // 회원가입 성공 후 자동 로그인
-      const result = await signIn("credentials", {
-        email,
-        password,
-        redirect: false,
-      });
-
-      if (result?.ok) {
-        router.push("/budget");
-        router.refresh();
-      } else {
-        // 회원가입은 성공했지만 로그인 실패 시 로그인 페이지로
-        router.push("/?registered=true");
-      }
+      // 회원가입 성공 후 이메일 인증 대기 페이지로 리다이렉트
+      router.push(`/verify-email-sent?email=${encodeURIComponent(email)}`);
     } catch {
       setErrors({ general: "서버 오류가 발생했습니다" });
     } finally {
