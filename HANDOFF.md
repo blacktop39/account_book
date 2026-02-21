@@ -170,7 +170,85 @@ docker start postgres-budget  # DB 시작
 ---
 
 ## 마지막 업데이트
-- **일시**: 2026-02-13
-- **작업**: 2차 카테고리(서브카테고리) 기능 구현 완료
-- **빌드**: 성공
-- **타입 체크**: 통과
+- **일시**: 2026-02-20
+- **작업**: Capacitor 모바일 지원 추가
+- **빌드**: 미실행 (PR 머지 전)
+- **타입 체크**: 미실행
+
+---
+
+## 최신 작업: Capacitor 모바일 지원 (2026-02-20)
+
+### 완료된 작업
+- [x] Capacitor Android 모바일 지원 추가
+  - Capacitor 패키지 설치 (@capacitor/android 8.1.0, @capacitor/core, @capacitor/cli)
+  - Android 프로젝트 구조 및 Gradle 설정 생성
+  - Android 앱 아이콘 및 스플래시 화면 리소스 추가
+  - Capacitor 관련 npm 스크립트 추가 (cap:sync, cap:open:android, android)
+  - Prisma generate를 postinstall 및 build 스크립트에 통합
+
+- [x] Git 워크플로우 완료
+  - feature/capacitor-mobile 브랜치 생성
+  - .gitignore 업데이트 (Android 빌드 파일, IDE 설정)
+  - 58개 파일 커밋 (+1949줄)
+  - 원격 브랜치로 푸시 완료
+  - **PR #6 생성 완료**: https://github.com/blacktop39/account_book/pull/6
+
+### 새로 추가된 파일
+```
+capacitor.config.ts                  # Capacitor 메인 설정
+android/                             # Android 프로젝트 전체 디렉토리
+├── app/
+│   ├── build.gradle                # Android 앱 빌드 설정
+│   ├── src/main/
+│   │   ├── AndroidManifest.xml     # 앱 매니페스트
+│   │   ├── java/com/accountbook/app/MainActivity.java
+│   │   └── res/                    # 아이콘, 스플래시 리소스
+├── build.gradle                    # 프로젝트 빌드 설정
+└── gradle/                         # Gradle 래퍼
+```
+
+### 수정된 파일
+```
+.gitignore                          # Android 빌드 파일, .idea/ 추가
+package.json                        # Capacitor 의존성 및 스크립트
+package-lock.json                   # 의존성 잠금 파일
+```
+
+### Git 상태
+- **브랜치**: feature/capacitor-mobile
+- **마지막 커밋**: 32bebf5 - "[feat] Capacitor 모바일 지원 추가"
+- **PR**: #6 (Open, 리뷰 대기)
+- **원격**: origin/feature/capacitor-mobile (푸시 완료)
+
+### 다음 단계
+1. **PR #6 리뷰 및 머지**
+2. **Android 앱 테스트**
+   ```bash
+   npm install
+   npm run cap:sync
+   npm run cap:open:android
+   ```
+3. **필수 요구사항**
+   - Android SDK 설치 (Android Studio 권장)
+   - Java 11 이상
+4. **향후 계획**
+   - iOS 플랫폼 추가 고려
+   - Capacitor 플러그인 추가 (카메라, 파일 시스템 등)
+   - 모바일 최적화 (반응형 디자인, 터치 이벤트)
+
+### Capacitor 관련 명령어
+```bash
+# Capacitor 동기화 (웹 앱 → 네이티브 앱)
+npm run cap:sync
+
+# Android Studio에서 프로젝트 열기
+npm run cap:open:android
+
+# 또는 한 번에
+npm run android
+```
+
+---
+
+## 이전 작업 기록

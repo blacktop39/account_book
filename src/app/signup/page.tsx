@@ -9,7 +9,6 @@ import { Logo } from "@/components/auth/logo";
 import { SocialButton } from "@/components/auth/social-button";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Divider } from "@/components/ui/divider";
 
 interface FormErrors {
@@ -26,7 +25,6 @@ export default function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [agreeTerms, setAgreeTerms] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
 
@@ -63,11 +61,6 @@ export default function SignupPage() {
     e.preventDefault();
 
     if (!validateForm()) return;
-
-    if (!agreeTerms) {
-      setErrors({ general: "이용약관에 동의해주세요" });
-      return;
-    }
 
     setIsLoading(true);
     setErrors({});
@@ -171,13 +164,6 @@ export default function SignupPage() {
             onChange={(e) => setConfirmPassword(e.target.value)}
             error={errors.confirmPassword}
             autoComplete="new-password"
-          />
-
-          <Checkbox
-            id="terms"
-            label="이용약관 및 개인정보 처리방침에 동의합니다"
-            checked={agreeTerms}
-            onChange={(e) => setAgreeTerms(e.target.checked)}
           />
 
           <Button
