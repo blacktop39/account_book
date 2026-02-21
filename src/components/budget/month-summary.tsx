@@ -49,11 +49,10 @@ export function MonthSummary({ summary, className }: MonthSummaryProps) {
             </span>
           </div>
           <p
-            className="text-xl font-semibold tabular-nums"
+            className="text-xl font-semibold tabular-nums whitespace-nowrap"
             style={{ color: item.color }}
           >
-            {item.label === "잔액" && item.value < 0 ? "-" : ""}
-            ₩{formatAmountShort(Math.abs(item.value))}
+            {item.label === "잔액" && item.value < 0 ? "-" : ""}₩{formatAmountShort(Math.abs(item.value))}
           </p>
         </div>
       ))}
