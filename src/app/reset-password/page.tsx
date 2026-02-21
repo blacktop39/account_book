@@ -209,7 +209,7 @@ export default function ResetPasswordPage() {
         fallback={
           <AuthCard>
             <div className="flex justify-center py-8">
-              <div className="animate-spin h-8 w-8 border-2 border-white border-t-transparent rounded-full" />
+              <div className="animate-spin h-8 w-8 border-2 border-[var(--text-primary)] border-t-transparent rounded-full" />
             </div>
           </AuthCard>
         }

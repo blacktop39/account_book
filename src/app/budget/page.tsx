@@ -96,7 +96,7 @@ export default function BudgetPage() {
   if (isLoading) {
     return (
       <main className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin h-8 w-8 border-2 border-white border-t-transparent rounded-full" />
+        <div className="animate-spin h-8 w-8 border-2 border-[var(--text-primary)] border-t-transparent rounded-full" />
       </main>
     );
   }
