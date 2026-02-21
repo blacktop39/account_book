@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Plus, TrendingUp, TrendingDown } from "lucide-react";
+import { ArrowLeft, Plus, TrendingUp, TrendingDown, LogOut } from "lucide-react";
+import { signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
 import { Tabs } from "@/components/ui/tabs";
@@ -29,7 +30,7 @@ export default function SettingsPage() {
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [addingSubTo, setAddingSubTo] = useState<Category | null>(null);
 
-  const categories = activeTab === "income" ? incomeCategories : expenseCategories;
+  const categories: Category[] = activeTab === "income" ? incomeCategories : expenseCategories;
 
   const handleAddCategory = async (data: {
     name: string;
@@ -243,6 +244,23 @@ export default function SettingsPage() {
             className="max-w-full"
           />
         </div>
+
+        {/* 로그아웃 섹션 */}
+        <section className="mt-8 bg-[var(--surface)] border border-[var(--border)] rounded-xl p-6">
+          <h2 className="text-lg font-semibold mb-4">계정</h2>
+          <Button
+            variant="secondary"
+            onClick={() => {
+              if (confirm("로그아웃 하시겠습니까?")) {
+                signOut({ callbackUrl: "/" });
+              }
+            }}
+            className="w-full flex items-center justify-center gap-2"
+          >
+            <LogOut className="w-4 h-4" />
+            로그아웃
+          </Button>
+        </section>
       </div>
     </main>
   );

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Transaction, TransactionType } from "@/lib/budget/types";
 import {
   getCurrentMonth,
@@ -11,111 +12,115 @@ import {
 } from "@/lib/budget/utils";
 
 export function useTransactions() {
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const queryClient = useQueryClient();
   const [currentMonth, setCurrentMonth] = useState(getCurrentMonth());
-  const [isLoading, setIsLoading] = useState(true);
 
-  // API에서 거래 데이터 가져오기
-  const fetchTransactions = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      const res = await fetch(`/api/budget/transactions`);
-      if (res.ok) {
-        const data = await res.json();
-        setTransactions(data.transactions || []);
-      }
-    } catch (error) {
-      console.error("거래 조회 실패:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  // React Query로 거래 데이터 가져오기
+  const { data: transactions = [], isLoading } = useQuery({
+    queryKey: ["transactions"],
+    queryFn: async () => {
+      const res = await fetch("/api/budget/transactions");
+      if (!res.ok) throw new Error("거래 조회 실패");
+      const data = await res.json();
+      return data.transactions || [];
+    },
+  });
 
-  // 초기 데이터 로드
-  useEffect(() => {
-    fetchTransactions();
-  }, [fetchTransactions]);
-
-  // 거래 추가
-  const addTransaction = useCallback(
-    async (data: {
+  // 거래 추가 Mutation
+  const addTransactionMutation = useMutation({
+    mutationFn: async (data: {
       type: TransactionType;
       amount: number;
       categoryId: string;
       description: string;
+      place: string;
       date: string;
     }) => {
-      try {
-        const res = await fetch("/api/budget/transactions", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
-        });
-
-        if (res.ok) {
-          const { transaction } = await res.json();
-          // 낙관적 업데이트
-          setTransactions((prev) => [transaction, ...prev]);
-          return transaction;
-        }
-      } catch (error) {
-        console.error("거래 추가 실패:", error);
-      }
-      return null;
+      const res = await fetch("/api/budget/transactions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error("거래 추가 실패");
+      const { transaction } = await res.json();
+      return transaction;
     },
-    []
-  );
+    onSuccess: (newTransaction) => {
+      queryClient.setQueryData<Transaction[]>(["transactions"], (old = []) => [
+        newTransaction,
+        ...old,
+      ]);
+    },
+  });
 
-  // 거래 수정
-  const updateTransaction = useCallback(
-    async (
-      id: string,
+  // 거래 수정 Mutation
+  const updateTransactionMutation = useMutation({
+    mutationFn: async ({
+      id,
+      data,
+    }: {
+      id: string;
       data: Partial<{
         type: TransactionType;
         amount: number;
         categoryId: string;
         description: string;
+        place: string;
         date: string;
-      }>
-    ) => {
-      try {
-        const res = await fetch(`/api/budget/transactions/${id}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
-        });
-
-        if (res.ok) {
-          const { transaction } = await res.json();
-          // 낙관적 업데이트
-          setTransactions((prev) =>
-            prev.map((t) => (t.id === id ? transaction : t))
-          );
-          return transaction;
-        }
-      } catch (error) {
-        console.error("거래 수정 실패:", error);
-      }
-      return null;
+      }>;
+    }) => {
+      const res = await fetch(`/api/budget/transactions/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error("거래 수정 실패");
+      const { transaction } = await res.json();
+      return transaction;
     },
-    []
-  );
+    onSuccess: (updatedTransaction) => {
+      queryClient.setQueryData<Transaction[]>(["transactions"], (old = []) =>
+        old.map((t) => (t.id === updatedTransaction.id ? updatedTransaction : t))
+      );
+    },
+  });
 
-  // 거래 삭제
-  const deleteTransaction = useCallback(async (id: string) => {
-    try {
+  // 거래 삭제 Mutation
+  const deleteTransactionMutation = useMutation({
+    mutationFn: async (id: string) => {
       const res = await fetch(`/api/budget/transactions/${id}`, {
         method: "DELETE",
       });
+      if (!res.ok) throw new Error("거래 삭제 실패");
+    },
+    onSuccess: (_, deletedId) => {
+      queryClient.setQueryData<Transaction[]>(["transactions"], (old = []) =>
+        old.filter((t) => t.id !== deletedId)
+      );
+    },
+  });
 
-      if (res.ok) {
-        // 낙관적 업데이트
-        setTransactions((prev) => prev.filter((t) => t.id !== id));
-      }
-    } catch (error) {
-      console.error("거래 삭제 실패:", error);
-    }
-  }, []);
+  // 편의 함수들
+  const addTransaction = useCallback(
+    (data: Parameters<typeof addTransactionMutation.mutateAsync>[0]) => {
+      return addTransactionMutation.mutateAsync(data);
+    },
+    [addTransactionMutation]
+  );
+
+  const updateTransaction = useCallback(
+    (id: string, data: Parameters<typeof updateTransactionMutation.mutateAsync>[0]["data"]) => {
+      return updateTransactionMutation.mutateAsync({ id, data });
+    },
+    [updateTransactionMutation]
+  );
+
+  const deleteTransaction = useCallback(
+    (id: string) => {
+      return deleteTransactionMutation.mutateAsync(id);
+    },
+    [deleteTransactionMutation]
+  );
 
   // 현재 월 거래
   const monthTransactions = filterTransactionsByMonth(transactions, currentMonth);
