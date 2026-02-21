@@ -148,13 +148,13 @@ export function CategorySelect({
         className={cn(
           "w-full h-10 px-3 flex items-center justify-between",
           "bg-[var(--surface)] border rounded-lg",
-          "text-white text-left",
+          "text-[var(--text-primary)] text-left",
           "transition-colors duration-200",
-          "focus:outline-none focus:border-white",
+          "focus:outline-none focus:border-[var(--accent)]",
           error
             ? "border-[var(--error)]"
             : isOpen
-              ? "border-white"
+              ? "border-[var(--accent)]"
               : "border-[var(--border)]"
         )}
       >
@@ -194,7 +194,7 @@ export function CategorySelect({
               <button
                 type="button"
                 onClick={handleBack}
-                className="w-full px-3 py-2 flex items-center gap-2 text-left border-b border-[var(--border)] hover:bg-white/5"
+                className="w-full px-3 py-2 flex items-center gap-2 text-left text-[var(--text-primary)] border-b border-[var(--border)] hover:bg-white/5"
               >
                 <ArrowLeft className="w-4 h-4 text-[var(--text-muted)]" />
                 <span className="font-medium">{selectedParent.name}</span>
@@ -206,7 +206,7 @@ export function CategorySelect({
                   onClick={() => handleChildClick(selectedParent.id)}
                   className={cn(
                     "w-full px-3 py-2 flex items-center gap-2 text-left",
-                    "hover:bg-white/5 transition-colors text-[var(--text-secondary)]",
+                    "text-[var(--text-secondary)] hover:bg-white/5 transition-colors",
                     selectedParent.id === value && "bg-white/10"
                   )}
                 >
@@ -221,7 +221,7 @@ export function CategorySelect({
                     onClick={() => handleChildClick(child.id)}
                     className={cn(
                       "w-full px-3 py-2 flex items-center gap-2 text-left",
-                      "hover:bg-white/5 transition-colors",
+                      "text-[var(--text-primary)] hover:bg-white/5 transition-colors",
                       child.id === value && "bg-white/10"
                     )}
                   >
@@ -241,7 +241,7 @@ export function CategorySelect({
                   onClick={() => handleParentClick(cat)}
                   className={cn(
                     "w-full px-3 py-2 flex items-center justify-between text-left",
-                    "hover:bg-white/5 transition-colors",
+                    "text-[var(--text-primary)] hover:bg-white/5 transition-colors",
                     cat.id === value && "bg-white/10"
                   )}
                 >

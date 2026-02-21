@@ -58,13 +58,13 @@ export function Select({
         className={cn(
           "w-full h-10 px-3 flex items-center justify-between",
           "bg-[var(--surface)] border rounded-lg",
-          "text-white text-left",
+          "text-[var(--text-primary)] text-left",
           "transition-colors duration-200",
-          "focus:outline-none focus:border-white",
+          "focus:outline-none focus:border-[var(--accent)]",
           error
             ? "border-[var(--error)]"
             : isOpen
-              ? "border-white"
+              ? "border-[var(--accent)]"
               : "border-[var(--border)]"
         )}
       >
@@ -97,7 +97,7 @@ export function Select({
               }}
               className={cn(
                 "w-full px-3 py-2 flex items-center gap-2 text-left",
-                "hover:bg-white/5 transition-colors",
+                "text-[var(--text-primary)] hover:bg-white/5 transition-colors",
                 option.value === value && "bg-white/10"
               )}
             >
