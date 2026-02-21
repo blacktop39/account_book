@@ -114,7 +114,7 @@ export function IconPicker({ value, onChange, color = "#868e96" }: IconPickerPro
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center gap-3 px-4 py-3 bg-[var(--input-bg)] border border-[var(--border)] rounded-xl hover:border-[var(--text-muted)] transition-colors"
+        className="w-full flex items-center gap-3 px-4 py-3 bg-[var(--input-bg)] border border-[var(--border)] rounded-xl hover:border-[var(--text-muted)] transition-colors cursor-pointer"
       >
         <div
           className="w-10 h-10 rounded-lg flex items-center justify-center"
@@ -141,7 +141,7 @@ export function IconPicker({ value, onChange, color = "#868e96" }: IconPickerPro
                     setIsOpen(false);
                   }}
                   className={cn(
-                    "w-10 h-10 rounded-lg flex items-center justify-center transition-colors",
+                    "w-10 h-10 rounded-lg flex items-center justify-center transition-colors cursor-pointer",
                     value === item.id
                       ? "bg-white/20"
                       : "hover:bg-white/10"

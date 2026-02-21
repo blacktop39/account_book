@@ -56,7 +56,7 @@ export function Select({
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          "w-full h-10 px-3 flex items-center justify-between",
+          "w-full h-10 px-3 flex items-center justify-between cursor-pointer",
           "bg-[var(--surface)] border rounded-lg",
           "text-[var(--text-primary)] text-left",
           "transition-colors duration-200",
@@ -96,7 +96,7 @@ export function Select({
                 setIsOpen(false);
               }}
               className={cn(
-                "w-full px-3 py-2 flex items-center gap-2 text-left",
+                "w-full px-3 py-2 flex items-center gap-2 text-left cursor-pointer",
                 "text-[var(--text-primary)] hover:bg-white/5 transition-colors",
                 option.value === value && "bg-white/10"
               )}

@@ -31,7 +31,7 @@ export function ColorPicker({ value, onChange }: ColorPickerProps) {
           type="button"
           onClick={() => onChange(color.id)}
           className={cn(
-            "w-10 h-10 rounded-lg transition-all",
+            "w-10 h-10 rounded-lg transition-all cursor-pointer",
             value === color.id
               ? "ring-2 ring-white ring-offset-2 ring-offset-[var(--background)] scale-110"
               : "hover:scale-105"

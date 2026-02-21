@@ -59,7 +59,7 @@ export function TransactionItem({
           {onEdit && (
             <button
               onClick={() => onEdit(transaction)}
-              className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg hover:bg-white/10 transition-all"
+              className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg hover:bg-white/10 transition-all cursor-pointer"
               title="수정"
             >
               <Pencil className="w-4 h-4 text-[var(--text-muted)]" />
@@ -68,7 +68,7 @@ export function TransactionItem({
           {onDelete && (
             <button
               onClick={() => onDelete(transaction.id)}
-              className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg hover:bg-white/10 transition-all"
+              className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg hover:bg-white/10 transition-all cursor-pointer"
               title="삭제"
             >
               <Trash2 className="w-4 h-4 text-[var(--text-muted)]" />

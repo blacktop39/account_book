@@ -67,7 +67,7 @@ export function CategoryItem({
           <button
             onClick={onAddSub}
             className={cn(
-              "p-1.5 rounded-lg hover:bg-white/10 transition-all",
+              "p-1.5 rounded-lg hover:bg-white/10 transition-all cursor-pointer",
               "opacity-0 group-hover:opacity-100"
             )}
             title="서브카테고리 추가"
@@ -78,7 +78,7 @@ export function CategoryItem({
         <button
           onClick={() => onEdit(category)}
           className={cn(
-            "p-1.5 rounded-lg hover:bg-white/10 transition-all",
+            "p-1.5 rounded-lg hover:bg-white/10 transition-all cursor-pointer",
             "opacity-0 group-hover:opacity-100"
           )}
           title="수정"
@@ -89,7 +89,7 @@ export function CategoryItem({
           <button
             onClick={() => onDelete(category.id)}
             className={cn(
-              "p-1.5 rounded-lg hover:bg-white/10 transition-all",
+              "p-1.5 rounded-lg hover:bg-white/10 transition-all cursor-pointer",
               "opacity-0 group-hover:opacity-100"
             )}
             title="삭제"

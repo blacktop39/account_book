@@ -82,7 +82,7 @@ export function CalendarView({
               className={cn(
                 "relative aspect-square flex flex-col items-center justify-center rounded-lg transition-colors",
                 isCurrentMonth
-                  ? "hover:bg-white/10"
+                  ? "hover:bg-white/10 cursor-pointer"
                   : "opacity-30 cursor-default",
                 isSelected && "bg-white/20",
                 isToday(day) && "ring-1 ring-white/50"

@@ -146,7 +146,7 @@ export function CategorySelect({
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          "w-full h-10 px-3 flex items-center justify-between",
+          "w-full h-10 px-3 flex items-center justify-between cursor-pointer",
           "bg-[var(--surface)] border rounded-lg",
           "text-[var(--text-primary)] text-left",
           "transition-colors duration-200",
@@ -194,7 +194,7 @@ export function CategorySelect({
               <button
                 type="button"
                 onClick={handleBack}
-                className="w-full px-3 py-2 flex items-center gap-2 text-left text-[var(--text-primary)] border-b border-[var(--border)] hover:bg-white/5"
+                className="w-full px-3 py-2 flex items-center gap-2 text-left text-[var(--text-primary)] border-b border-[var(--border)] hover:bg-white/5 cursor-pointer"
               >
                 <ArrowLeft className="w-4 h-4 text-[var(--text-muted)]" />
                 <span className="font-medium">{selectedParent.name}</span>
@@ -205,7 +205,7 @@ export function CategorySelect({
                   type="button"
                   onClick={() => handleChildClick(selectedParent.id)}
                   className={cn(
-                    "w-full px-3 py-2 flex items-center gap-2 text-left",
+                    "w-full px-3 py-2 flex items-center gap-2 text-left cursor-pointer",
                     "text-[var(--text-secondary)] hover:bg-white/5 transition-colors",
                     selectedParent.id === value && "bg-white/10"
                   )}
@@ -220,7 +220,7 @@ export function CategorySelect({
                     type="button"
                     onClick={() => handleChildClick(child.id)}
                     className={cn(
-                      "w-full px-3 py-2 flex items-center gap-2 text-left",
+                      "w-full px-3 py-2 flex items-center gap-2 text-left cursor-pointer",
                       "text-[var(--text-primary)] hover:bg-white/5 transition-colors",
                       child.id === value && "bg-white/10"
                     )}
@@ -240,7 +240,7 @@ export function CategorySelect({
                   type="button"
                   onClick={() => handleParentClick(cat)}
                   className={cn(
-                    "w-full px-3 py-2 flex items-center justify-between text-left",
+                    "w-full px-3 py-2 flex items-center justify-between text-left cursor-pointer",
                     "text-[var(--text-primary)] hover:bg-white/5 transition-colors",
                     cat.id === value && "bg-white/10"
                   )}
