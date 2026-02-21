@@ -26,9 +26,9 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             type={isPassword && showPassword ? "text" : type}
             className={cn(
               "w-full h-10 px-3 bg-[var(--surface)] border border-[var(--border)] rounded-lg",
-              "text-white placeholder:text-[var(--text-muted)]",
+              "text-[var(--text-primary)] placeholder:text-[var(--text-muted)]",
               "transition-colors duration-200",
-              "focus:outline-none focus:border-white",
+              "focus:outline-none focus:border-[var(--accent)]",
               "disabled:opacity-50 disabled:cursor-not-allowed",
               error && "border-[var(--error)] focus:border-[var(--error)]",
               isPassword && "pr-10",
@@ -41,7 +41,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-white transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
             >
               {showPassword ? (
                 <EyeOff className="h-4 w-4" />
