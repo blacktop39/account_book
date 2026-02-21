@@ -32,7 +32,7 @@ export async function PATCH(
     }
 
     const body = await request.json();
-    const { type, amount, categoryId, description, date } = body;
+    const { type, amount, categoryId, description, place, date } = body;
 
     // 부분 업데이트 데이터 구성
     const updateData: {
@@ -40,6 +40,7 @@ export async function PATCH(
       amount?: number;
       categoryId?: string;
       description?: string;
+      place?: string;
       date?: string;
     } = {};
 
@@ -69,6 +70,10 @@ export async function PATCH(
 
     if (description !== undefined) {
       updateData.description = description;
+    }
+
+    if (place !== undefined) {
+      updateData.place = place;
     }
 
     if (date !== undefined) {

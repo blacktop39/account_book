@@ -61,6 +61,7 @@ export default function BudgetPage() {
     amount: number;
     categoryId: string;
     description: string;
+    place: string;
     date: string;
   }) => {
     addTransaction(data);
@@ -72,6 +73,7 @@ export default function BudgetPage() {
     amount: number;
     categoryId: string;
     description: string;
+    place: string;
     date: string;
   }) => {
     if (editingTransaction) {
@@ -254,6 +256,7 @@ export default function BudgetPage() {
                 amount: editingTransaction.amount,
                 categoryId: editingTransaction.categoryId,
                 description: editingTransaction.description,
+                place: editingTransaction.place,
                 date: editingTransaction.date,
               }}
               mode="edit"

@@ -30,6 +30,11 @@ export function TransactionItem({
           <p className="text-sm font-medium">
             {transaction.description || "내역 없음"}
           </p>
+          {transaction.place && (
+            <p className="text-xs text-[var(--text-muted)] mt-0.5">
+              {transaction.place}
+            </p>
+          )}
           <CategoryBadge
             categoryId={transaction.categoryId}
             category={category}

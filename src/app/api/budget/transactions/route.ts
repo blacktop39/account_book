@@ -71,7 +71,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { type, amount, categoryId, description, date } = body;
+    const { type, amount, categoryId, description, place, date } = body;
 
     // 유효성 검증
     if (!type || !["income", "expense"].includes(type)) {
@@ -108,6 +108,7 @@ export async function POST(request: Request) {
         amount: Math.round(amount),
         categoryId,
         description: description || "",
+        place: place || "",
         date,
         userId: session.user.id,
       },

@@ -16,6 +16,7 @@ interface TransactionFormProps {
     amount: number;
     categoryId: string;
     description: string;
+    place: string;
     date: string;
   }) => void;
   onCancel: () => void;
@@ -23,6 +24,7 @@ interface TransactionFormProps {
     amount: number;
     categoryId: string;
     description: string;
+    place: string;
     date: string;
   };
   mode?: "add" | "edit";
@@ -44,6 +46,7 @@ export function TransactionForm({
   const [description, setDescription] = useState(
     initialData?.description || ""
   );
+  const [place, setPlace] = useState(initialData?.place || "");
   const [date, setDate] = useState(initialData?.date || getToday());
   const [errors, setErrors] = useState<{
     amount?: string;
@@ -90,6 +93,7 @@ export function TransactionForm({
       amount: Number(amount),
       categoryId,
       description,
+      place,
       date,
     });
   };
@@ -128,6 +132,14 @@ export function TransactionForm({
         placeholder="예: 점심식사, 지하철 등"
         value={description}
         onChange={(e) => setDescription(e.target.value)}
+      />
+
+      <Input
+        type="text"
+        label="사용처 (선택)"
+        placeholder="예: 골프존, 스타벅스 등"
+        value={place}
+        onChange={(e) => setPlace(e.target.value)}
       />
 
       <Input

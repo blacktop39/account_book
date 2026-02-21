@@ -20,6 +20,7 @@ export interface Transaction {
   amount: number;
   categoryId: string;
   description: string;
+  place: string;
   date: string; // YYYY-MM-DD
   createdAt: string; // ISO string
 }
