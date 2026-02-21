@@ -170,14 +170,92 @@ docker start postgres-budget  # DB 시작
 ---
 
 ## 마지막 업데이트
-- **일시**: 2026-02-20
-- **작업**: Capacitor 모바일 지원 추가
-- **빌드**: 미실행 (PR 머지 전)
-- **타입 체크**: 미실행
+- **일시**: 2026-02-21
+- **작업**: Google AdSense 광고 시스템 구현 및 배포 완료
+- **빌드**: 성공
+- **배포**: 프로덕션 배포 완료
 
 ---
 
-## 최신 작업: Capacitor 모바일 지원 (2026-02-20)
+## 최신 작업: Google AdSense 광고 시스템 (2026-02-21)
+
+### 완료된 작업
+- [x] 회원가입 약관 체크박스 제거
+  - 실제 약관이 없어 불필요한 체크박스 제거
+  - 빌드 성공 및 Vercel 배포 완료
+
+- [x] Google AdSense 광고 시스템 구현
+  - 개인정보 처리방침 페이지 생성 (/privacy)
+  - AdSense Script 추가 (layout.tsx)
+  - 재사용 가능한 광고 컴포넌트 (AdSenseBanner)
+  - 3개 주요 페이지에 광고 배치 (통계, 가계부, 설정)
+  - 환경 변수 설정 (NEXT_PUBLIC_ADSENSE_ID)
+  - Vercel 환경 변수 추가
+  - 프로덕션 배포 완료
+
+### 새로 추가된 파일
+```
+src/app/privacy/page.tsx              # 개인정보 처리방침
+src/components/ads/adsense-banner.tsx # AdSense 광고 컴포넌트
+```
+
+### 수정된 파일
+```
+src/app/layout.tsx                    # AdSense Script 추가
+src/app/signup/page.tsx               # 약관 체크박스 제거
+src/app/budget/stats/page.tsx         # 통계 페이지 광고
+src/app/budget/page.tsx               # 가계부 페이지 광고
+src/app/settings/page.tsx             # 설정 페이지 광고
+.env.local                            # AdSense ID 설정
+```
+
+### 환경 변수
+```bash
+NEXT_PUBLIC_ADSENSE_ID=ca-pub-8192196990908412
+```
+
+### Git 상태
+- **브랜치**: main
+- **최신 커밋**: de59e35 - "[feat] Google AdSense 광고 추가"
+- **배포**: 프로덕션 배포 완료 (https://accountbook-vert.vercel.app)
+
+### 광고가 표시되는 페이지
+- 통계: /budget/stats
+- 가계부: /budget
+- 설정: /settings
+- 개인정보 처리방침: /privacy
+
+### 다음 단계
+1. **AdSense 승인 대기**
+   - Google AdSense 대시보드에서 승인 상태 확인
+   - 승인 후 자동으로 광고 표시 시작
+   - 수익 모니터링: https://adsense.google.com
+
+2. **AdMob 모바일 광고 (선택사항)**
+   - Capacitor AdMob 플러그인 설치
+   - Android 앱에 배너 광고 추가
+   - 모바일 수익화
+
+3. **PR #6 머지**
+   - feature/capacitor-mobile 브랜치
+   - Android 앱 지원 추가
+   - 리뷰 후 main에 머지
+
+### AdSense 관련 명령어
+```bash
+# 로컬에서 테스트
+npm run dev
+
+# 환경 변수 확인
+vercel env ls
+
+# 재배포
+vercel --prod
+```
+
+---
+
+## 이전 작업: Capacitor 모바일 지원 (2026-02-20)
 
 ### 완료된 작업
 - [x] Capacitor Android 모바일 지원 추가

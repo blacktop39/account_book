@@ -1,17 +1,17 @@
 @import "tailwindcss";
 
 :root {
-  --background: #000000;
-  --foreground: #ededed;
-  --surface: #0a0a0a;
-  --border: #333333;
-  --border-hover: #555555;
-  --text-primary: #ededed;
-  --text-secondary: #888888;
-  --text-muted: #666666;
-  --accent: #ffffff;
-  --error: #ff4444;
-  --success: #00d68f;
+  --background: #ffffff;
+  --foreground: #000000;
+  --surface: #fafafa;
+  --border: #e5e5e5;
+  --border-hover: #d4d4d4;
+  --text-primary: #000000;
+  --text-secondary: #666666;
+  --text-muted: #999999;
+  --accent: #000000;
+  --error: #ef4444;
+  --success: #10b981;
 }
 
 @theme inline {
@@ -52,5 +52,5 @@ html {
 
 /* 선택 색상 */
 ::selection {
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: rgba(0, 0, 0, 0.1);
 }
