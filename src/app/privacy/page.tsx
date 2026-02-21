@@ -179,8 +179,8 @@ export default function PrivacyPage() {
               개인정보 처리방침에 대한 문의사항이 있으시면 아래로 연락주시기 바랍니다:
             </p>
             <ul className="list-none space-y-2 text-[var(--text-secondary)] mt-4">
-              <li>이메일: privacy@accountbook.com</li>
-              <li>서비스 관리자: 김재현</li>
+              <li>이메일: blacktop39@gmail.com</li>
+              <li>서비스 관리자: Andrew</li>
             </ul>
           </section>
 

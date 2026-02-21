@@ -236,11 +236,6 @@ NEXT_PUBLIC_ADSENSE_ID=ca-pub-8192196990908412
    - Android 앱에 배너 광고 추가
    - 모바일 수익화
 
-3. **PR #6 머지**
-   - feature/capacitor-mobile 브랜치
-   - Android 앱 지원 추가
-   - 리뷰 후 main에 머지
-
 ### AdSense 관련 명령어
 ```bash
 # 로컬에서 테스트
