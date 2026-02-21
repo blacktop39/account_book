@@ -174,13 +174,24 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">11. 문의</h2>
-            <p className="text-[var(--text-secondary)]">
-              개인정보 처리방침에 대한 문의사항이 있으시면 아래로 연락주시기 바랍니다:
+            <h2 className="text-2xl font-semibold mb-4">11. 개인정보 보호책임자</h2>
+            <p className="text-[var(--text-secondary)] mb-4">
+              가계부는 이용자의 개인정보를 보호하고 개인정보와 관련된 불만을 처리하기 위하여
+              아래와 같이 개인정보 보호책임자를 지정하고 있습니다.
             </p>
-            <ul className="list-none space-y-2 text-[var(--text-secondary)] mt-4">
-              <li>이메일: blacktop39@gmail.com</li>
-              <li>서비스 관리자: Andrew</li>
+            <ul className="list-none space-y-2 text-[var(--text-secondary)] mt-4 bg-[var(--surface)] border border-[var(--border)] rounded-lg p-4">
+              <li className="font-medium text-[var(--text-primary)]">▪ 개인정보 보호책임자</li>
+              <li className="ml-4">- 성명: Andrew (김재현)</li>
+              <li className="ml-4">- 직책: 서비스 관리자</li>
+              <li className="ml-4">- 이메일: blacktop39@gmail.com</li>
+            </ul>
+            <p className="text-[var(--text-secondary)] mt-4">
+              개인정보 침해에 대한 신고나 상담이 필요한 경우 아래 기관에 문의하실 수 있습니다:
+            </p>
+            <ul className="list-disc list-inside space-y-2 text-[var(--text-secondary)] mt-2 ml-4">
+              <li>개인정보침해신고센터 (privacy.kisa.or.kr / 국번없이 118)</li>
+              <li>대검찰청 사이버범죄수사단 (www.spo.go.kr / 국번없이 1301)</li>
+              <li>경찰청 사이버안전국 (cyberbureau.police.go.kr / 국번없이 182)</li>
             </ul>
           </section>
 
