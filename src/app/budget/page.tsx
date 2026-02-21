@@ -23,6 +23,7 @@ import { useTransactions } from "@/lib/hooks/use-transactions";
 import { useCategories } from "@/lib/hooks/use-categories";
 import { formatMonth, formatDate } from "@/lib/budget/utils";
 import { Transaction, TransactionType } from "@/lib/budget/types";
+import { AdSenseBanner } from "@/components/ads/adsense-banner";
 
 type ViewMode = "list" | "calendar";
 
@@ -263,6 +264,15 @@ export default function BudgetPage() {
             />
           )}
         </Modal>
+
+        {/* 광고 영역 */}
+        <div className="mt-8">
+          <AdSenseBanner
+            adSlot="1234567891"
+            adFormat="horizontal"
+            className="max-w-full"
+          />
+        </div>
       </div>
     </main>
   );

@@ -12,6 +12,7 @@ import { CategoryBadge } from "@/components/budget/category-badge";
 import { useTransactions } from "@/lib/hooks/use-transactions";
 import { useCategories, Category } from "@/lib/hooks/use-categories";
 import { formatAmount, formatMonth } from "@/lib/budget/utils";
+import { AdSenseBanner } from "@/components/ads/adsense-banner";
 
 type TabType = "monthly" | "yearly";
 
@@ -219,6 +220,15 @@ export default function StatsPage() {
             <MonthlyTrend transactions={transactions} />
           </div>
         )}
+
+        {/* 광고 영역 */}
+        <div className="mt-8">
+          <AdSenseBanner
+            adSlot="1234567890"
+            adFormat="horizontal"
+            className="max-w-full"
+          />
+        </div>
       </div>
     </main>
   );

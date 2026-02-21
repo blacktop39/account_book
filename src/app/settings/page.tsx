@@ -10,6 +10,7 @@ import { CategoryForm } from "@/components/settings/category-form";
 import { CategoryItem } from "@/components/settings/category-item";
 import { useCategories, Category } from "@/lib/hooks/use-categories";
 import { TransactionType } from "@/lib/budget/types";
+import { AdSenseBanner } from "@/components/ads/adsense-banner";
 
 type CategoryTab = "income" | "expense";
 
@@ -233,6 +234,15 @@ export default function SettingsPage() {
             />
           )}
         </Modal>
+
+        {/* 광고 영역 */}
+        <div className="mt-8">
+          <AdSenseBanner
+            adSlot="1234567892"
+            adFormat="horizontal"
+            className="max-w-full"
+          />
+        </div>
       </div>
     </main>
   );
