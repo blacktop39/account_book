@@ -179,7 +179,7 @@ export default function SignupPage() {
           이미 계정이 있으신가요?{" "}
           <Link
             href="/"
-            className="text-white hover:underline"
+            className="text-[var(--text-primary)] hover:underline"
           >
             로그인
           </Link>

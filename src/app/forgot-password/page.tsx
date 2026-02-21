@@ -115,7 +115,7 @@ export default function ForgotPasswordPage() {
                 이메일을 확인해주세요
               </h2>
               <p className="text-sm text-[var(--text-secondary)] mb-6">
-                <span className="text-white">{email}</span>으로
+                <span className="text-[var(--text-primary)]">{email}</span>으로
                 <br />
                 비밀번호 재설정 링크를 보냈습니다
               </p>
@@ -123,7 +123,7 @@ export default function ForgotPasswordPage() {
                 이메일이 도착하지 않았나요?{" "}
                 <button
                   onClick={() => setIsSubmitted(false)}
-                  className="text-white hover:underline"
+                  className="text-[var(--text-primary)] hover:underline"
                 >
                   다시 보내기
                 </button>
@@ -135,7 +135,7 @@ export default function ForgotPasswordPage() {
         <div className="mt-6 pt-6 border-t border-[var(--border)]">
           <Link
             href="/"
-            className="flex items-center justify-center gap-2 text-sm text-[var(--text-secondary)] hover:text-white transition-colors"
+            className="flex items-center justify-center gap-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             로그인으로 돌아가기

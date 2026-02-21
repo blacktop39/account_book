@@ -117,7 +117,7 @@ export default function LoginPage() {
             />
             <Link
               href="/forgot-password"
-              className="text-sm text-[var(--text-secondary)] hover:text-white transition-colors"
+              className="text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
             >
               비밀번호 찾기
             </Link>
@@ -136,7 +136,7 @@ export default function LoginPage() {
           계정이 없으신가요?{" "}
           <Link
             href="/signup"
-            className="text-white hover:underline"
+            className="text-[var(--text-primary)] hover:underline"
           >
             가입하기
           </Link>

@@ -192,7 +192,7 @@ function ResetPasswordForm() {
       <div className="mt-6 pt-6 border-t border-[var(--border)]">
         <Link
           href="/"
-          className="flex items-center justify-center gap-2 text-sm text-[var(--text-secondary)] hover:text-white transition-colors"
+          className="flex items-center justify-center gap-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           로그인으로 돌아가기

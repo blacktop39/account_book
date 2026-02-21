@@ -106,8 +106,8 @@ export default function StatsPage() {
             onClick={() => setActiveTab("monthly")}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               activeTab === "monthly"
-                ? "bg-white/10 text-white"
-                : "text-[var(--text-muted)] hover:bg-white/5"
+                ? "bg-[var(--accent)]/10 text-[var(--text-primary)]"
+                : "text-[var(--text-muted)] hover:bg-[var(--accent)]/5"
             }`}
           >
             <BarChart3 className="w-4 h-4" />
@@ -117,8 +117,8 @@ export default function StatsPage() {
             onClick={() => setActiveTab("yearly")}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               activeTab === "yearly"
-                ? "bg-white/10 text-white"
-                : "text-[var(--text-muted)] hover:bg-white/5"
+                ? "bg-[var(--accent)]/10 text-[var(--text-primary)]"
+                : "text-[var(--text-muted)] hover:bg-[var(--accent)]/5"
             }`}
           >
             <Calendar className="w-4 h-4" />
