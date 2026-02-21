@@ -23,14 +23,14 @@ const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
             className={cn(
               "peer h-4 w-4 appearance-none rounded border border-[var(--border)]",
               "bg-transparent transition-colors duration-200",
-              "checked:bg-white checked:border-white",
-              "focus:outline-none focus:ring-2 focus:ring-white/20",
+              "checked:bg-[var(--accent)] checked:border-[var(--accent)]",
+              "focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/20",
               className
             )}
             {...props}
           />
           <Check
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-3 w-3 text-black opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-3 w-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none"
             strokeWidth={3}
           />
         </div>

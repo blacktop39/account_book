@@ -51,10 +51,10 @@ export function SocialButton({ provider, className }: SocialButtonProps) {
       className={cn(
         "flex items-center justify-center gap-3 w-full h-10 px-4",
         "bg-transparent border border-[var(--border)] rounded-lg",
-        "text-white text-sm font-medium",
+        "text-[var(--text-primary)] text-sm font-medium",
         "transition-all duration-200",
-        "hover:border-[var(--border-hover)] hover:bg-white/5",
-        "focus:outline-none focus:ring-2 focus:ring-white/20",
+        "hover:border-[var(--border-hover)] hover:bg-[var(--accent)]/5",
+        "focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/20",
         "disabled:opacity-50 disabled:cursor-not-allowed",
         className
       )}
