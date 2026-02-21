@@ -21,7 +21,7 @@ import { TransactionForm } from "@/components/budget/transaction-form";
 import { CalendarView } from "@/components/budget/calendar-view";
 import { useTransactions } from "@/lib/hooks/use-transactions";
 import { useCategories } from "@/lib/hooks/use-categories";
-import { formatMonth, formatDate } from "@/lib/budget/utils";
+import { formatMonth } from "@/lib/budget/utils";
 import { Transaction, TransactionType } from "@/lib/budget/types";
 import { AdSenseBanner } from "@/components/ads/adsense-banner";
 
@@ -204,9 +204,6 @@ export default function BudgetPage() {
 
             {selectedDate && (
               <div>
-                <h3 className="text-sm font-medium text-[var(--text-secondary)] mb-3">
-                  {formatDate(selectedDate)}
-                </h3>
                 {selectedDateTransactions.length > 0 ? (
                   <TransactionList
                     groupedTransactions={selectedDateGrouped}
