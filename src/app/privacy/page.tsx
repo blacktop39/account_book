@@ -181,7 +181,7 @@ export default function PrivacyPage() {
             </p>
             <ul className="list-none space-y-2 text-[var(--text-secondary)] mt-4 bg-[var(--surface)] border border-[var(--border)] rounded-lg p-4">
               <li className="font-medium text-[var(--text-primary)]">▪ 개인정보 보호책임자</li>
-              <li className="ml-4">- 성명: Andrew (김재현)</li>
+              <li className="ml-4">- 성명: Andrew (전상호)</li>
               <li className="ml-4">- 직책: 서비스 관리자</li>
               <li className="ml-4">- 이메일: blacktop39@gmail.com</li>
             </ul>
